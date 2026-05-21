@@ -9,10 +9,11 @@ data class Task(
     val taskId: Int = 0,
     val name: String,
     val startDate: String,
-    val startTime: String,
-    val endDate: String,
-    val endTime: String,
-    val category: String,
-    val notes: String,
-    val remind: Boolean
+    val startTime: String?,
+    val endDate: String?,
+    val endTime: String?,
+    val category: String?,
+    val notes: String?,
+    val remind: Boolean,
+    val isDone: Boolean
 )
