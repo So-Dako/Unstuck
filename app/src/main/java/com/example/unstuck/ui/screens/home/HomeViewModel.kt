@@ -1,10 +1,9 @@
-package com.example.unstuck.ui.screens
+package com.example.unstuck.ui.screens.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.unstuck.TaskRepository
 import com.example.unstuck.database.Task
-import com.example.unstuck.database.TaskDao
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
 import kotlinx.coroutines.flow.SharingStarted
