@@ -1,0 +1,148 @@
+package com.example.unstuck.ui.screens.addEditTask
+
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.input.rememberTextFieldState
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBackIos
+import androidx.compose.material.icons.filled.ArrowBackIos
+import androidx.compose.material3.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.example.unstuck.ui.theme.UnstuckTheme
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun AddTask(modifier: Modifier = Modifier){
+    var checked by remember { mutableStateOf(true) }
+    Scaffold(
+        topBar = {
+            CenterAlignedTopAppBar(
+                navigationIcon = {
+                    IconButton(onClick = {}){
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBackIos,
+                            contentDescription = "Назад"
+                        )
+                    }
+                },
+                title = {Text("Нове завдання")}
+            )
+        }
+    ){ innerPadding ->
+        Column(modifier = Modifier
+            .padding(innerPadding)
+            .fillMaxSize()
+            .padding(16.dp)
+        ){
+            Text("Назва завдання")
+            OutlinedTextField(
+                state = rememberTextFieldState(initialText = "Ранкове заняття з йоги"),
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = MaterialTheme.colorScheme.primary,
+                    unfocusedBorderColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f)
+                ),
+                shape = RoundedCornerShape(24.dp),
+                textStyle = LocalTextStyle.current.copy(fontSize = 16.sp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 8.dp)
+            )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ){
+                Column(
+                    modifier = Modifier.weight(1f)
+                ){
+                    Text("Дата")
+                    OutlinedTextField(
+                        state = rememberTextFieldState(initialText = "24 жовтня 2023 р."),
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = MaterialTheme.colorScheme.primary,
+                            unfocusedBorderColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f)
+                        ),
+                        shape = RoundedCornerShape(24.dp),
+                        textStyle = LocalTextStyle.current.copy(fontSize = 16.sp),
+                        modifier = Modifier
+                            .padding(vertical = 8.dp)
+                            .fillMaxWidth()
+                    )
+                }
+                Column(
+                    modifier = Modifier.weight(1f)
+                ){
+                    Text("Час")
+                    OutlinedTextField(
+                        state = rememberTextFieldState(initialText = "07:30"),
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = MaterialTheme.colorScheme.primary,
+                            unfocusedBorderColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f)
+                        ),
+                        shape = RoundedCornerShape(24.dp),
+                        textStyle = LocalTextStyle.current.copy(fontSize = 16.sp),
+                        modifier = Modifier
+                            .padding(vertical = 8.dp)
+                            .fillMaxWidth()
+                    )
+                }
+            }
+            Text("Нотатки")
+            OutlinedTextField(
+                state = rememberTextFieldState(initialText = "Не забудь новий лавандовий килимок для йоги. Виконай 30-хвилинний комплекс для гнучкості від Адрієн."),
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = MaterialTheme.colorScheme.primary,
+                    unfocusedBorderColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f)
+                ),
+                shape = RoundedCornerShape(24.dp),
+                textStyle = LocalTextStyle.current.copy(fontSize = 16.sp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 8.dp)
+            )
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 8.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ){
+                Text("Нагадати мені",
+                    fontSize = 16.sp,
+                    modifier = Modifier.weight(1f))
+                Switch(
+                    checked = checked,
+                    onCheckedChange = { checked = it },
+                    )
+            }
+            Button(
+                onClick = {},
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 8.dp)
+            ){
+                Text (
+                    "Зберегти зміни",
+                    fontSize = 18.sp,
+                    modifier = Modifier.padding(vertical = 4.dp)
+                )
+            }
+        }
+    }
+}
+
+@Preview(showSystemUi = true)
+@Composable
+fun AddTaskPreview(){
+    UnstuckTheme(){
+        Scaffold() { innerPadding -> AddTask(modifier = Modifier.padding(innerPadding)) }
+    }
+}
