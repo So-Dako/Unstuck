@@ -15,4 +15,8 @@ class TaskRepository @Inject constructor(
     fun getTaskByDate(date: LocalDate) : Flow<List<Task>> {
         return taskDao.getTaskByDate(date.toString())
     }
+
+    suspend fun addTask(newTask: Task){
+        taskDao.upsertTask(newTask)
+    }
 }

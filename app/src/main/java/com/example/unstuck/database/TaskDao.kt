@@ -14,12 +14,12 @@ interface TaskDao {
     @Delete
     suspend fun deleteTask(task: Task)
 
-    @Query("SELECT * FROM task WHERE category = :category ORDER BY startDate, startTime")
+    @Query("SELECT * FROM task WHERE category = :category ORDER BY date, time")
     fun getTaskByCategory(category: String): Flow<List<Task>>
 
-    @Query("SELECT * FROM task ORDER BY startDate, startTime")
+    @Query("SELECT * FROM task ORDER BY date, time")
     fun getTaskByDate(): Flow<List<Task>>
 
-    @Query("SELECT * FROM task WHERE startDate = :date ORDER BY startTime")
+    @Query("SELECT * FROM task WHERE date = :date ORDER BY time")
     fun getTaskByDate(date: String): Flow<List<Task>>
 }

@@ -3,6 +3,8 @@
         alias(libs.plugins.kotlin.compose)
         id("com.google.devtools.ksp")
         id("com.google.dagger.hilt.android")
+
+        id("org.jetbrains.kotlin.plugin.serialization")
     }
 
     android {
@@ -39,6 +41,7 @@
 
     dependencies {
         val room_version = "2.8.4"
+        val nav3Version = "1.1.2"
 
         implementation(libs.androidx.core.ktx)
         implementation(libs.androidx.lifecycle.runtime.ktx)
@@ -67,4 +70,10 @@
 
         implementation("androidx.compose.material:material-icons-core")
         implementation("androidx.compose.material:material-icons-extended")
+
+        implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.0")
+
+        implementation("androidx.navigation3:navigation3-runtime:$nav3Version")
+        implementation("androidx.navigation3:navigation3-ui:$nav3Version")
+        implementation("androidx.lifecycle:lifecycle-viewmodel-navigation3:$nav3Version")
     }

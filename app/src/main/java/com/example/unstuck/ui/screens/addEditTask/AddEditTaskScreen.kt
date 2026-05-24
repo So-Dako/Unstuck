@@ -17,17 +17,25 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.unstuck.navigation.Screens
 import com.example.unstuck.ui.theme.UnstuckTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddTask(modifier: Modifier = Modifier){
+fun AddTask(
+    viewModel: AddEditTaskViewModel,
+    onBack: () -> Unit,
+    modifier: Modifier = Modifier
+){
     var checked by remember { mutableStateOf(true) }
+
+    val state = viewModel.addEditTaskState
+
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
                 navigationIcon = {
-                    IconButton(onClick = {}){
+                    IconButton(onClick = onBack){
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBackIos,
                             contentDescription = "Назад"
@@ -45,7 +53,9 @@ fun AddTask(modifier: Modifier = Modifier){
         ){
             Text("Назва завдання")
             OutlinedTextField(
-                state = rememberTextFieldState(initialText = "Ранкове заняття з йоги"),
+                value = state.title,
+                onValueChange = { viewModel.onEvent(AddEditTaskEvent.onTitleChanged(it)) },
+                //state = rememberTextFieldState(initialText = "Ранкове заняття з йоги"),
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedBorderColor = MaterialTheme.colorScheme.primary,
                     unfocusedBorderColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f)
@@ -97,7 +107,9 @@ fun AddTask(modifier: Modifier = Modifier){
             }
             Text("Нотатки")
             OutlinedTextField(
-                state = rememberTextFieldState(initialText = "Не забудь новий лавандовий килимок для йоги. Виконай 30-хвилинний комплекс для гнучкості від Адрієн."),
+                value = state.notes,
+                onValueChange = { viewModel.onEvent(AddEditTaskEvent.onNotesChanged(it)) },
+                //state = rememberTextFieldState(initialText = "Не забудь новий лавандовий килимок для йоги. Виконай 30-хвилинний комплекс для гнучкості від Адрієн."),
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedBorderColor = MaterialTheme.colorScheme.primary,
                     unfocusedBorderColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f)
@@ -119,12 +131,12 @@ fun AddTask(modifier: Modifier = Modifier){
                     fontSize = 16.sp,
                     modifier = Modifier.weight(1f))
                 Switch(
-                    checked = checked,
-                    onCheckedChange = { checked = it },
+                    checked = state.remind,
+                    onCheckedChange = { viewModel.onEvent(AddEditTaskEvent.onRemindClicked(it)) },
                     )
             }
             Button(
-                onClick = {},
+                onClick = { viewModel.onEvent(AddEditTaskEvent.onSaveTask) },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(vertical = 8.dp)
@@ -139,10 +151,11 @@ fun AddTask(modifier: Modifier = Modifier){
     }
 }
 
-@Preview(showSystemUi = true)
+/*@Preview(showSystemUi = true)
 @Composable
 fun AddTaskPreview(){
     UnstuckTheme(){
         Scaffold() { innerPadding -> AddTask(modifier = Modifier.padding(innerPadding)) }
     }
 }
+ */
