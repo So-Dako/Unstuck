@@ -27,8 +27,13 @@ fun HomeScreen(
     val tasks by viewModel.taskState.collectAsStateWithLifecycle()
 
     Scaffold(
+        containerColor = MaterialTheme.colorScheme.background,
         floatingActionButton = {
-            FloatingActionButton(onClick = onAdd) {
+            FloatingActionButton(
+                onClick = onAdd,
+                containerColor = MaterialTheme.colorScheme.primary,
+                contentColor = MaterialTheme.colorScheme.surface
+            ) {
                 Icon(
                     imageVector = Icons.Default.Add,
                     contentDescription = "Додаати"

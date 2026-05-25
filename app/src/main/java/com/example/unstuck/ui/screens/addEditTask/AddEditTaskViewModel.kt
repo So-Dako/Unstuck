@@ -9,33 +9,36 @@ import androidx.lifecycle.viewModelScope
 import com.example.unstuck.TaskRepository
 import com.example.unstuck.database.Task
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class AddEditTaskViewModel @Inject constructor(private val repository: TaskRepository) : ViewModel() {
-    var addEditTaskState by mutableStateOf(AddEditTaskState())
-    private set
+    private val _addEditTaskState = MutableStateFlow(AddEditTaskState())
+    val addEditTaskState = _addEditTaskState.asStateFlow()
 
     fun onEvent(event: AddEditTaskEvent){
         when(event) {
             is AddEditTaskEvent.onDateChanged -> {
-                addEditTaskState.copy(date = event.date)
+                _addEditTaskState.update { it.copy(date = event.date) }
             }
             is AddEditTaskEvent.onNotesChanged -> {
-                addEditTaskState.copy(notes = event.notes)
+                _addEditTaskState.update { it.copy(notes = event.notes) }
             }
             is AddEditTaskEvent.onRemindClicked -> {
-                addEditTaskState.copy(remind = !event.remind)
+                _addEditTaskState.update { it.copy(remind = event.remind) }
             }
             AddEditTaskEvent.onSaveTask -> {
-                if (addEditTaskState.titleError == null){
+                if (_addEditTaskState.value.titleError == null){
                     val newTask = Task(
-                        name = addEditTaskState.title,
-                        date = addEditTaskState.date.toString(),
-                        time = addEditTaskState.time.toString(),
-                        notes = addEditTaskState.notes,
-                        remind = addEditTaskState.remind,
+                        name = _addEditTaskState.value.title,
+                        date = _addEditTaskState.value.date.toString(),
+                        time = _addEditTaskState.value.time.toString(),
+                        notes = _addEditTaskState.value.notes,
+                        remind = _addEditTaskState.value.remind,
                         isDone = false
                     )
                     viewModelScope.launch {
@@ -44,13 +47,17 @@ class AddEditTaskViewModel @Inject constructor(private val repository: TaskRepos
                 }
             }
             is AddEditTaskEvent.onTimeChanged -> {
-                addEditTaskState.copy(time = event.time)
+                _addEditTaskState.update {
+                    it.copy(time = event.time)
+                }
             }
             is AddEditTaskEvent.onTitleChanged -> {
-                addEditTaskState.copy(
-                    title = event.title,
-                    titleError = null
-                )
+                _addEditTaskState.update {
+                    it.copy(
+                        title = event.title,
+                        titleError = null
+                    )
+                }
             }
         }
     }

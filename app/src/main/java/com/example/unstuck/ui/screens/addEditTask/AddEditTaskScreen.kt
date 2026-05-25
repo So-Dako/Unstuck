@@ -19,6 +19,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.unstuck.navigation.Screens
 import com.example.unstuck.ui.theme.UnstuckTheme
+import androidx.compose.runtime.collectAsState
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -29,7 +31,7 @@ fun AddTask(
 ){
     var checked by remember { mutableStateOf(true) }
 
-    val state = viewModel.addEditTaskState
+    val state = viewModel.addEditTaskState.collectAsStateWithLifecycle()
 
     Scaffold(
         topBar = {
@@ -53,7 +55,7 @@ fun AddTask(
         ){
             Text("Назва завдання")
             OutlinedTextField(
-                value = state.title,
+                value = state.value.title,
                 onValueChange = { viewModel.onEvent(AddEditTaskEvent.onTitleChanged(it)) },
                 //state = rememberTextFieldState(initialText = "Ранкове заняття з йоги"),
                 colors = OutlinedTextFieldDefaults.colors(
@@ -107,7 +109,7 @@ fun AddTask(
             }
             Text("Нотатки")
             OutlinedTextField(
-                value = state.notes,
+                value = state.value.notes,
                 onValueChange = { viewModel.onEvent(AddEditTaskEvent.onNotesChanged(it)) },
                 //state = rememberTextFieldState(initialText = "Не забудь новий лавандовий килимок для йоги. Виконай 30-хвилинний комплекс для гнучкості від Адрієн."),
                 colors = OutlinedTextFieldDefaults.colors(
@@ -131,7 +133,7 @@ fun AddTask(
                     fontSize = 16.sp,
                     modifier = Modifier.weight(1f))
                 Switch(
-                    checked = state.remind,
+                    checked = state.value.remind,
                     onCheckedChange = { viewModel.onEvent(AddEditTaskEvent.onRemindClicked(it)) },
                     )
             }
