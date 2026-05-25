@@ -1,5 +1,9 @@
 package com.example.unstuck.ui.screens.addEditTask
 
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.awaitEachGesture
+import androidx.compose.foundation.gestures.awaitFirstDown
+import androidx.compose.foundation.gestures.waitForUpOrCancellation
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.input.rememberTextFieldState
@@ -20,7 +24,12 @@ import androidx.compose.ui.unit.sp
 import com.example.unstuck.navigation.Screens
 import com.example.unstuck.ui.theme.UnstuckTheme
 import androidx.compose.runtime.collectAsState
+import androidx.compose.ui.input.pointer.PointerEventPass
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.unstuck.formats.toFormattedString
+import java.time.Instant
+import java.time.ZoneOffset
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -29,9 +38,8 @@ fun AddTask(
     onBack: () -> Unit,
     modifier: Modifier = Modifier
 ){
-    var checked by remember { mutableStateOf(true) }
-
     val state = viewModel.addEditTaskState.collectAsStateWithLifecycle()
+    val showDatePicker by remember { mutableStateOf(state.value.showDatePicker) }
 
     Scaffold(
         topBar = {
@@ -77,7 +85,9 @@ fun AddTask(
                 ){
                     Text("Дата")
                     OutlinedTextField(
-                        state = rememberTextFieldState(initialText = "24 жовтня 2023 р."),
+                        value = state.value.date.toFormattedString(),
+                        onValueChange = { },
+                        readOnly = true,
                         colors = OutlinedTextFieldDefaults.colors(
                             focusedBorderColor = MaterialTheme.colorScheme.primary,
                             unfocusedBorderColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f)
@@ -87,14 +97,61 @@ fun AddTask(
                         modifier = Modifier
                             .padding(vertical = 8.dp)
                             .fillMaxWidth()
+                            .pointerInput(state.value.date){
+                                awaitEachGesture {
+                                    awaitFirstDown(pass = PointerEventPass.Initial)
+                                    val upEvent = waitForUpOrCancellation(pass = PointerEventPass.Initial)
+                                    if(upEvent != null){
+                                        viewModel.onEvent(AddEditTaskEvent.onDateTextFieldClicked)
+                                    }
+                                }
+                            }
                     )
+
+                    if(state.value.showDatePicker){
+                        val datePickerState = rememberDatePickerState(
+                            state.value.date
+                                .atStartOfDay(ZoneOffset.UTC)
+                                .toInstant()
+                                .toEpochMilli())
+
+                        DatePickerDialog(
+                            onDismissRequest = { viewModel.onEvent(AddEditTaskEvent.onDismissDatePicker) },
+                            confirmButton = {
+                                TextButton(
+                                    onClick = {
+                                        datePickerState.selectedDateMillis?.let{ millis ->
+                                            val date = Instant
+                                                .ofEpochMilli(millis)
+                                                .atZone(ZoneOffset.UTC)
+                                                .toLocalDate()
+                                            viewModel.onEvent(AddEditTaskEvent.onDateSelected(date))
+                                        }
+                                    }
+                                ) {
+                                    Text("ОК")
+                                }
+                            },
+                            dismissButton = {
+                                TextButton(onClick = { viewModel.onEvent(AddEditTaskEvent.onDismissDatePicker) }) {
+                                    Text("Скасувати")
+                                }
+                            }
+                        ) {
+                            DatePicker(
+                                state = datePickerState
+                            )
+                        }
+                    }
                 }
                 Column(
                     modifier = Modifier.weight(1f)
                 ){
                     Text("Час")
                     OutlinedTextField(
-                        state = rememberTextFieldState(initialText = "07:30"),
+                        value = state.value.time.toFormattedString(),
+                        onValueChange = {},
+                        readOnly = true,
                         colors = OutlinedTextFieldDefaults.colors(
                             focusedBorderColor = MaterialTheme.colorScheme.primary,
                             unfocusedBorderColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f)

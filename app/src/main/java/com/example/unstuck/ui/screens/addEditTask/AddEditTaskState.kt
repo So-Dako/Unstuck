@@ -9,5 +9,6 @@ data class AddEditTaskState(
     val date: LocalDate = LocalDate.now(),
     val time: LocalTime = LocalTime.now(),
     val notes: String = "",
-    val remind: Boolean = true
+    val remind: Boolean = true,
+    val showDatePicker: Boolean = false
 )

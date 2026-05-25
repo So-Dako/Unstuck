@@ -22,9 +22,11 @@ class AddEditTaskViewModel @Inject constructor(private val repository: TaskRepos
 
     fun onEvent(event: AddEditTaskEvent){
         when(event) {
-            is AddEditTaskEvent.onDateChanged -> {
+            /*is AddEditTaskEvent.onDateChanged -> {
                 _addEditTaskState.update { it.copy(date = event.date) }
             }
+
+             */
             is AddEditTaskEvent.onNotesChanged -> {
                 _addEditTaskState.update { it.copy(notes = event.notes) }
             }
@@ -57,6 +59,24 @@ class AddEditTaskViewModel @Inject constructor(private val repository: TaskRepos
                         title = event.title,
                         titleError = null
                     )
+                }
+            }
+            is AddEditTaskEvent.onDateSelected -> {
+                _addEditTaskState.update {
+                    it.copy(
+                        date = event.selectedDate,
+                        showDatePicker = false
+                    )
+                }
+            }
+            AddEditTaskEvent.onDateTextFieldClicked -> {
+                _addEditTaskState.update {
+                    it.copy(showDatePicker = true)
+                }
+            }
+            AddEditTaskEvent.onDismissDatePicker -> {
+                _addEditTaskState.update {
+                    it.copy(showDatePicker = false)
                 }
             }
         }
