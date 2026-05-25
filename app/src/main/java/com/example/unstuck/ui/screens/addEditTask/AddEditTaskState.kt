@@ -7,8 +7,9 @@ data class AddEditTaskState(
     val title: String = "",
     val titleError: String? = "Назва не може бути порожньою!",
     val date: LocalDate = LocalDate.now(),
-    val time: LocalTime = LocalTime.now(),
+    val time: LocalTime = LocalTime.of(0,0),
     val notes: String = "",
     val remind: Boolean = true,
-    val showDatePicker: Boolean = false
+    val showDatePicker: Boolean = false,
+    val showTimePicker: Boolean = false
 )

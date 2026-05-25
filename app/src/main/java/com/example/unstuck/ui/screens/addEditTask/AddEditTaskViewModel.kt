@@ -1,9 +1,5 @@
 package com.example.unstuck.ui.screens.addEditTask
 
-import android.R.attr.category
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.unstuck.TaskRepository
@@ -22,18 +18,13 @@ class AddEditTaskViewModel @Inject constructor(private val repository: TaskRepos
 
     fun onEvent(event: AddEditTaskEvent){
         when(event) {
-            /*is AddEditTaskEvent.onDateChanged -> {
-                _addEditTaskState.update { it.copy(date = event.date) }
-            }
-
-             */
-            is AddEditTaskEvent.onNotesChanged -> {
+            is AddEditTaskEvent.OnNotesChanged -> {
                 _addEditTaskState.update { it.copy(notes = event.notes) }
             }
-            is AddEditTaskEvent.onRemindClicked -> {
+            is AddEditTaskEvent.OnRemindClicked -> {
                 _addEditTaskState.update { it.copy(remind = event.remind) }
             }
-            AddEditTaskEvent.onSaveTask -> {
+            AddEditTaskEvent.OnSaveTask -> {
                 if (_addEditTaskState.value.titleError == null){
                     val newTask = Task(
                         name = _addEditTaskState.value.title,
@@ -48,12 +39,7 @@ class AddEditTaskViewModel @Inject constructor(private val repository: TaskRepos
                     }
                 }
             }
-            is AddEditTaskEvent.onTimeChanged -> {
-                _addEditTaskState.update {
-                    it.copy(time = event.time)
-                }
-            }
-            is AddEditTaskEvent.onTitleChanged -> {
+            is AddEditTaskEvent.OnTitleChanged -> {
                 _addEditTaskState.update {
                     it.copy(
                         title = event.title,
@@ -61,7 +47,7 @@ class AddEditTaskViewModel @Inject constructor(private val repository: TaskRepos
                     )
                 }
             }
-            is AddEditTaskEvent.onDateSelected -> {
+            is AddEditTaskEvent.OnDateSelected -> {
                 _addEditTaskState.update {
                     it.copy(
                         date = event.selectedDate,
@@ -69,14 +55,33 @@ class AddEditTaskViewModel @Inject constructor(private val repository: TaskRepos
                     )
                 }
             }
-            AddEditTaskEvent.onDateTextFieldClicked -> {
+            AddEditTaskEvent.OnDateTextFieldClicked -> {
                 _addEditTaskState.update {
                     it.copy(showDatePicker = true)
                 }
             }
-            AddEditTaskEvent.onDismissDatePicker -> {
+            AddEditTaskEvent.OnDismissDatePicker -> {
                 _addEditTaskState.update {
                     it.copy(showDatePicker = false)
+                }
+            }
+
+            AddEditTaskEvent.OnDismissTimePicker -> {
+                _addEditTaskState.update {
+                    it.copy(showTimePicker = false)
+                }
+            }
+            is AddEditTaskEvent.OnTimeSelected -> {
+                _addEditTaskState.update {
+                    it.copy(
+                        time = event.selectedTime,
+                        showTimePicker = false
+                    )
+                }
+            }
+            AddEditTaskEvent.OnTimeTextFieldClicked -> {
+                _addEditTaskState.update {
+                    it.copy(showTimePicker = true)
                 }
             }
         }

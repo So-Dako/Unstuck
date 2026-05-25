@@ -40,6 +40,7 @@
     }
 
     dependencies {
+        implementation(libs.places)
         val room_version = "2.8.4"
         val nav3Version = "1.1.2"
 
