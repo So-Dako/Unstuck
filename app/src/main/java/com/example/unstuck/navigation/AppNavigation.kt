@@ -29,7 +29,8 @@ fun AppNavigation(backStack: SnapshotStateList<Screens>){
                 val addEditTaskViewModel: AddEditTaskViewModel = viewModel()
                 AddTask(
                     viewModel = addEditTaskViewModel,
-                    onBack = { backStack.removeLastOrNull() }
+                    onBack = { backStack.removeLastOrNull() },
+                    onSaveSuccess = { backStack.removeLastOrNull() }
                     )
             }
         }

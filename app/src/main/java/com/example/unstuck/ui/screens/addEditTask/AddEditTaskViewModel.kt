@@ -16,16 +16,27 @@ class AddEditTaskViewModel @Inject constructor(private val repository: TaskRepos
     private val _addEditTaskState = MutableStateFlow(AddEditTaskState())
     val addEditTaskState = _addEditTaskState.asStateFlow()
 
-    fun onEvent(event: AddEditTaskEvent){
-        when(event) {
+    private val _isSaved = MutableStateFlow(false)
+    val isSaved = _isSaved.asStateFlow()
+
+    fun onEvent(event: AddEditTaskEvent) {
+        when (event) {
             is AddEditTaskEvent.OnNotesChanged -> {
                 _addEditTaskState.update { it.copy(notes = event.notes) }
             }
+
             is AddEditTaskEvent.OnRemindClicked -> {
                 _addEditTaskState.update { it.copy(remind = event.remind) }
             }
+
             AddEditTaskEvent.OnSaveTask -> {
-                if (_addEditTaskState.value.titleError == null){
+                val currentTitle = _addEditTaskState.value.title.trim()
+
+                if (currentTitle.isEmpty()) {
+                    _addEditTaskState.value = _addEditTaskState.value.copy(
+                        titleError = "Назва не може бути порожньою!"
+                    )
+                } else {
                     val newTask = Task(
                         name = _addEditTaskState.value.title,
                         date = _addEditTaskState.value.date.toString(),
@@ -35,10 +46,16 @@ class AddEditTaskViewModel @Inject constructor(private val repository: TaskRepos
                         isDone = false
                     )
                     viewModelScope.launch {
-                        repository.addTask(newTask)
+                        try {
+                            repository.addTask(newTask)
+                            _addEditTaskState.value = AddEditTaskState()
+                            _isSaved.value = true
+                        } catch (e: Exception) {
+                        }
                     }
                 }
             }
+
             is AddEditTaskEvent.OnTitleChanged -> {
                 _addEditTaskState.update {
                     it.copy(

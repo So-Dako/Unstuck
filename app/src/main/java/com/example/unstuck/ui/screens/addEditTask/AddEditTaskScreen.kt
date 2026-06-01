@@ -9,6 +9,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBackIos
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -20,15 +21,25 @@ import com.example.unstuck.formats.toFormattedString
 import java.time.LocalTime
 import java.time.Instant
 import java.time.ZoneOffset
+import androidx.compose.runtime.*
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddTask(
     viewModel: AddEditTaskViewModel,
     onBack: () -> Unit,
+    onSaveSuccess: () -> Unit,
     modifier: Modifier = Modifier
 ){
     val state = viewModel.addEditTaskState.collectAsStateWithLifecycle()
+    val hasError = state.value.titleError != null
+    val isSaved by viewModel.isSaved.collectAsStateWithLifecycle()
+
+    LaunchedEffect(isSaved) {
+        if (isSaved) {
+            onSaveSuccess()
+        }
+    }
 
     Scaffold(
         topBar = {
@@ -50,11 +61,22 @@ fun AddTask(
             .fillMaxSize()
             .padding(16.dp)
         ){
-            Text("Назва завдання")
+            Text(
+                "Назва завдання",
+                color = if (hasError) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface
+            )
             OutlinedTextField(
                 value = state.value.title,
                 onValueChange = { viewModel.onEvent(AddEditTaskEvent.OnTitleChanged(it)) },
-                //state = rememberTextFieldState(initialText = "Ранкове заняття з йоги"),
+                isError = hasError,
+                supportingText = {
+                    if (hasError) {
+                        Text(
+                            text = state.value.titleError ?: "",
+                            color = MaterialTheme.colorScheme.error
+                        )
+                    }
+                },
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedBorderColor = MaterialTheme.colorScheme.primary,
                     unfocusedBorderColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f)
@@ -160,7 +182,8 @@ fun AddTask(
                     )
             }
             Button(
-                onClick = { viewModel.onEvent(AddEditTaskEvent.OnSaveTask) },
+                onClick = {
+                    viewModel.onEvent(AddEditTaskEvent.OnSaveTask) },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(vertical = 8.dp)

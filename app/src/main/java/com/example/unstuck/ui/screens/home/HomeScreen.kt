@@ -200,7 +200,7 @@ fun HomeScreenNew(
                                     color = MaterialTheme.colorScheme.surfaceVariant,
                                     shape = CircleShape
                                 )
-                                .padding(horizontal = 16.dp, vertical = 6.dp)
+                                .padding(horizontal = 16.dp, vertical = 4.dp)
                         ){
                             Text(
                                 formattedDate,
