@@ -41,6 +41,9 @@
 
     dependencies {
         implementation(libs.places)
+        implementation(libs.androidx.ui.tooling.preview)
+        implementation(libs.androidx.compose.ui.text)
+        debugImplementation(libs.androidx.ui.tooling)
         val room_version = "2.8.4"
         val nav3Version = "1.1.2"
 
