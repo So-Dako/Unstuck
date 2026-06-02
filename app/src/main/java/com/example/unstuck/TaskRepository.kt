@@ -19,4 +19,7 @@ class TaskRepository @Inject constructor(
     suspend fun addTask(newTask: Task){
         taskDao.upsertTask(newTask)
     }
+    suspend fun updateTask(task: Task){
+        taskDao.upsertTask(task)
+    }
 }

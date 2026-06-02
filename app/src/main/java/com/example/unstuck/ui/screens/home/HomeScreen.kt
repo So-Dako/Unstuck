@@ -20,12 +20,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.unstuck.database.Task
 import com.example.unstuck.ui.theme.UnstuckTheme
+import com.google.common.collect.Multimaps.index
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
@@ -35,95 +38,21 @@ fun HomeScreen(
     onAdd: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-
-
     val tasks by viewModel.taskState.collectAsStateWithLifecycle()
-
-    Scaffold(
-        containerColor = MaterialTheme.colorScheme.background,
-        floatingActionButton = {
-            FloatingActionButton(
-                onClick = onAdd,
-                containerColor = MaterialTheme.colorScheme.primary,
-                contentColor = MaterialTheme.colorScheme.surface
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Add,
-                    contentDescription = "Додаати"
-                )
-            }
-        }
-    ) { innerPadding ->
-        if (tasks.isEmpty()){
-            Box(
-                modifier = modifier
-                    .fillMaxSize()
-                    .padding(innerPadding),
-                contentAlignment = Alignment.Center
-            ){
-                Text("На сьогодні завдань немає")
-            }
-        }
-        else {
-            LazyColumn(
-                modifier = modifier.padding(innerPadding),
-            ) {
-                items(tasks) { task ->
-                    Row {
-                        IconButton(onClick = { !task.isDone }) {
-                            Icon(
-                                imageVector = if (task.isDone) {
-                                    Icons.Filled.CheckCircle
-                                } else {
-                                    Icons.Outlined.RadioButtonUnchecked
-                                },
-                                contentDescription = ""
-                            )
-                        }
-                        Column() {
-                            Text(task.name)
-                            task.time?.let{ Text(it) }
-                        }
-                    }
-                }
-            }
-        }
-    }
-}
-
-@Composable
-fun HomeScreenNew(
-    modifier: Modifier = Modifier
-) {
-    val tasks = remember {mutableStateListOf(
-        Task(
-            taskId = 0,
-            name = "Забрати посилку з Нової Пошти",
-            date = "2026-06-02",
-            time = "18:30",
-            notes = "Номер накладної: 20450012345678. Зберігання до суботи!",
-            remind = true,
-            isDone = false
-        ),
-        Task(
-            taskId = 1,
-            name = "Урок англійської мови",
-            date = "2026-06-03",
-            time = "19:00",
-            notes = "Повторити неправильні дієслова та дочитати статтю про Coroutines.",
-            remind = true,
-            isDone = false
-        ),
-    )}
 
     val dateFormatter = DateTimeFormatter.ofPattern("d MMMM")
     val formattedDate = LocalDate.now().format(dateFormatter)
 
+    val completedTasksCount = tasks.count { it.isDone }
+    val totalTasksCount = tasks.size
+    val progressFraction = if (totalTasksCount > 0) completedTasksCount.toFloat() / totalTasksCount else 0f
+
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
         floatingActionButton = {
             FloatingActionButton(
-                onClick = {  },
+                onClick = { onAdd() },
+                shape = CircleShape,
                 containerColor = MaterialTheme.colorScheme.primary,
                 contentColor = MaterialTheme.colorScheme.surface
             ) {
@@ -158,6 +87,7 @@ fun HomeScreenNew(
                 item{
                     Text(
                         "Доброго ранку",
+                        fontStyle = FontStyle.Italic,
                         style = MaterialTheme.typography.headlineLarge.copy(
                             fontWeight = FontWeight.Bold
                         )
@@ -180,9 +110,9 @@ fun HomeScreenNew(
                                     fontWeight = FontWeight.SemiBold
                                 )
                                 )
-                            Text("х з х завдань виконано")
+                            Text(text = "$completedTasksCount з $totalTasksCount завдань виконано")
                         }
-                        CircularProgressWithText(0.7f)
+                        CircularProgressWithText(progress = progressFraction)
                     }
                     Spacer(modifier = Modifier.height(16.dp))
                     Row(
@@ -209,8 +139,7 @@ fun HomeScreenNew(
                     }
                     Spacer(modifier = Modifier.height(8.dp))
                 }
-                itemsIndexed(tasks) { index, task ->
-                //items(tasks) { task ->
+                items(tasks, key = { it.taskId }) { task ->
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -223,7 +152,7 @@ fun HomeScreenNew(
                         horizontalArrangement = Arrangement.Start,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        IconButton(onClick = { tasks[index] = task.copy(isDone = !task.isDone) }) {
+                        IconButton(onClick = { viewModel.toggleTaskStatus(task) }) {
                             Icon(
                                 imageVector = if (task.isDone) {
                                     Icons.Filled.CheckCircle
@@ -231,12 +160,34 @@ fun HomeScreenNew(
                                     Icons.Outlined.RadioButtonUnchecked
                                 },
                                 contentDescription = null,
-                                tint = MaterialTheme.colorScheme.primary
+                                tint = if (task.isDone) {
+                                    MaterialTheme.colorScheme.primary
+                                } else {
+                                    MaterialTheme.colorScheme.primary.copy(alpha = 0.4f)
+                                }
                             )
                         }
                         Column() {
-                            Text(task.name)
-                            task.time?.let{ Text(it) }
+                            Text(
+                                task.name,
+                                textDecoration = if (task.isDone) TextDecoration.LineThrough else TextDecoration.None,
+                                color = if (task.isDone) {
+                                    MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
+                                } else {
+                                    MaterialTheme.colorScheme.onSurface
+                                }
+                            )
+                            task.time?.let{
+                                Text(
+                                    it,
+                                    textDecoration = if (task.isDone) TextDecoration.LineThrough else TextDecoration.None,
+                                    color = if (task.isDone) {
+                                        MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
+                                    } else {
+                                        MaterialTheme.colorScheme.onSurface
+                                    }
+                                )
+                            }
                         }
                     }
                 }
@@ -273,16 +224,5 @@ fun CircularProgressWithText(
         Text(
             text = "$percentage%"
         )
-    }
-}
-
-@Preview(showSystemUi = true)
-@Composable
-fun HomeNewPreview(){
-    UnstuckTheme {
-        Scaffold()
-        { innerPadding ->
-            HomeScreenNew(modifier = Modifier.padding(innerPadding))
-        }
     }
 }

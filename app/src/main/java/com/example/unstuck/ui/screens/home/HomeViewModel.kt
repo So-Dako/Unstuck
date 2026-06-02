@@ -9,6 +9,7 @@ import jakarta.inject.Inject
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 import java.time.LocalDate
 
 @HiltViewModel
@@ -22,4 +23,10 @@ class HomeViewModel @Inject constructor(
             started = SharingStarted.WhileSubscribed(5000),
             initialValue = emptyList()
         )
+
+    fun toggleTaskStatus(task: Task) {
+        viewModelScope.launch {
+            repository.updateTask(task.copy(isDone = !task.isDone))
+        }
+    }
 }
