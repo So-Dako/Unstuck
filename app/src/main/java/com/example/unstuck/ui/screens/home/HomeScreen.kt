@@ -27,6 +27,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.unstuck.database.Task
+import com.example.unstuck.ui.screens.elements.TaskCard
 import com.example.unstuck.ui.theme.UnstuckTheme
 import com.google.common.collect.Multimaps.index
 import java.time.LocalDate
@@ -35,7 +36,6 @@ import java.time.format.DateTimeFormatter
 @Composable
 fun HomeScreen(
     viewModel: HomeViewModel,
-    onAdd: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val tasks by viewModel.taskState.collectAsStateWithLifecycle()
@@ -45,46 +45,29 @@ fun HomeScreen(
 
     val completedTasksCount = tasks.count { it.isDone }
     val totalTasksCount = tasks.size
-    val progressFraction = if (totalTasksCount > 0) completedTasksCount.toFloat() / totalTasksCount else 0f
+    val progressFraction =
+        if (totalTasksCount > 0) completedTasksCount.toFloat() / totalTasksCount else 0f
 
-    Scaffold(
-        containerColor = MaterialTheme.colorScheme.background,
-        floatingActionButton = {
-            FloatingActionButton(
-                onClick = { onAdd() },
-                shape = CircleShape,
-                containerColor = MaterialTheme.colorScheme.primary,
-                contentColor = MaterialTheme.colorScheme.surface
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Add,
-                    contentDescription = "Додати"
-                )
-            }
-        }
-    ) { innerPadding ->
-        if (tasks.isEmpty()){
+        if (tasks.isEmpty()) {
             Box(
                 modifier = modifier
-                    .fillMaxSize()
-                    .padding(innerPadding),
+                    .fillMaxSize(),
                 contentAlignment = Alignment.Center
-            ){
+            ) {
                 Text("На сьогодні завдань немає")
             }
-        }
-        else {
+        } else {
             LazyColumn(
                 modifier = Modifier.fillMaxSize(),
                 contentPadding = PaddingValues(
                     start = 16.dp,
-                    top = innerPadding.calculateTopPadding() + 16.dp,
+                    top = 16.dp,
                     end = 16.dp,
-                    bottom = innerPadding.calculateBottomPadding() + 16.dp
+                    bottom = 16.dp
                 ),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                item{
+                item {
                     Text(
                         "Доброго ранку",
                         fontStyle = FontStyle.Italic,
@@ -100,16 +83,16 @@ fun HomeScreen(
                             .background(MaterialTheme.colorScheme.surfaceVariant)
                             .padding(horizontal = 18.dp, vertical = 16.dp),
                         verticalAlignment = Alignment.CenterVertically
-                    ){
+                    ) {
                         Column(
                             modifier = Modifier.weight(1f)
-                        ){
+                        ) {
                             Text(
                                 "Денний прогрес",
                                 style = MaterialTheme.typography.titleMedium.copy(
                                     fontWeight = FontWeight.SemiBold
                                 )
-                                )
+                            )
                             Text(text = "$completedTasksCount з $totalTasksCount завдань виконано")
                         }
                         CircularProgressWithText(progress = progressFraction)
@@ -120,10 +103,11 @@ fun HomeScreen(
                             .fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
-                    ){
+                    ) {
                         Text(
                             "Справи на сьогодні",
-                            style = MaterialTheme.typography.titleLarge)
+                            style = MaterialTheme.typography.titleLarge
+                        )
                         Box(
                             modifier = Modifier
                                 .background(
@@ -131,7 +115,7 @@ fun HomeScreen(
                                     shape = CircleShape
                                 )
                                 .padding(horizontal = 16.dp, vertical = 4.dp)
-                        ){
+                        ) {
                             Text(
                                 formattedDate,
                             )
@@ -140,61 +124,14 @@ fun HomeScreen(
                     Spacer(modifier = Modifier.height(8.dp))
                 }
                 items(tasks, key = { it.taskId }) { task ->
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .border(
-                                width = 2.dp,
-                                color = MaterialTheme.colorScheme.primary.copy(alpha = 0.2f),
-                                shape = RoundedCornerShape(16.dp)
-                            )
-                            .padding(16.dp),
-                        horizontalArrangement = Arrangement.Start,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        IconButton(onClick = { viewModel.toggleTaskStatus(task) }) {
-                            Icon(
-                                imageVector = if (task.isDone) {
-                                    Icons.Filled.CheckCircle
-                                } else {
-                                    Icons.Outlined.RadioButtonUnchecked
-                                },
-                                contentDescription = null,
-                                tint = if (task.isDone) {
-                                    MaterialTheme.colorScheme.primary
-                                } else {
-                                    MaterialTheme.colorScheme.primary.copy(alpha = 0.4f)
-                                }
-                            )
-                        }
-                        Column() {
-                            Text(
-                                task.name,
-                                textDecoration = if (task.isDone) TextDecoration.LineThrough else TextDecoration.None,
-                                color = if (task.isDone) {
-                                    MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
-                                } else {
-                                    MaterialTheme.colorScheme.onSurface
-                                }
-                            )
-                            task.time?.let{
-                                Text(
-                                    it,
-                                    textDecoration = if (task.isDone) TextDecoration.LineThrough else TextDecoration.None,
-                                    color = if (task.isDone) {
-                                        MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
-                                    } else {
-                                        MaterialTheme.colorScheme.onSurface
-                                    }
-                                )
-                            }
-                        }
-                    }
+                    TaskCard(
+                        task = task,
+                        onCheckedChange = { viewModel.toggleTaskStatus(task) }
+                    )
                 }
             }
         }
     }
-}
 
 @Composable
 fun CircularProgressWithText(

@@ -32,7 +32,7 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colorScheme.surface,
                     modifier = Modifier.fillMaxSize()
                 ) {
-                    val backStack = remember { mutableStateListOf<Screens>(Screens.Home) }
+                    val backStack = remember { mutableStateListOf<Screens>(Screens.Main) }
                     AppNavigation(backStack = backStack)
                 }
             }

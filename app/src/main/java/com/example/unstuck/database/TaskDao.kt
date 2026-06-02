@@ -5,6 +5,7 @@ import androidx.room.Delete
 import androidx.room.Query
 import androidx.room.Upsert
 import kotlinx.coroutines.flow.Flow
+import java.time.LocalDate
 
 @Dao
 interface TaskDao {
@@ -22,4 +23,7 @@ interface TaskDao {
 
     @Query("SELECT * FROM task WHERE date = :date ORDER BY time")
     fun getTaskByDate(date: String): Flow<List<Task>>
+
+    @Query("SELECT DISTINCT date FROM task")
+    fun getAllDatesWithTasks(): Flow<List<String>>
 }

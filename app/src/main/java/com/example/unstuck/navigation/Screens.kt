@@ -5,7 +5,7 @@ import kotlinx.serialization.Serializable
 
 sealed interface Screens: NavKey {
     @Serializable
-    data object Home: Screens
+    data object Main: Screens
     @Serializable
     data object AddTask: Screens
 }

@@ -43,6 +43,9 @@
         implementation(libs.places)
         implementation(libs.androidx.ui.tooling.preview)
         implementation(libs.androidx.compose.ui.text)
+        implementation(libs.androidx.material3)
+        implementation(libs.androidx.ui)
+        implementation(libs.androidx.compose.foundation)
         debugImplementation(libs.androidx.ui.tooling)
         val room_version = "2.8.4"
         val nav3Version = "1.1.2"
