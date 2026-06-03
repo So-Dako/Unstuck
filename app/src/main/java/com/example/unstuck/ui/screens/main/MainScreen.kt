@@ -28,6 +28,8 @@ import com.example.unstuck.ui.screens.calendar.CalendarScreen
 import com.example.unstuck.ui.screens.calendar.CalendarViewModel
 import com.example.unstuck.ui.screens.home.HomeScreen
 import com.example.unstuck.ui.screens.home.HomeViewModel
+import com.example.unstuck.ui.screens.statistics.StatisticsScreen
+import com.example.unstuck.ui.screens.statistics.StatisticsViewModel
 
 @Composable
 fun MainScreen(
@@ -103,6 +105,10 @@ fun MainScreen(
                     )
                 }
                 MainTab.STATS -> {
+                    val statisticsViewModel: StatisticsViewModel = hiltViewModel()
+                    StatisticsScreen(
+                        viewModel = statisticsViewModel
+                    )
                 }
                 MainTab.PROFILE -> {
                 }

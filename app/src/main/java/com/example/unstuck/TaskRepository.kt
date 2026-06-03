@@ -33,4 +33,8 @@ class TaskRepository @Inject constructor(
                 }
             }
     }
+
+    fun getAllTaskFilteredByDate():Flow<List<Task>>{
+        return taskDao.getAllTaskFilteredByDate()
+    }
 }

@@ -1,5 +1,6 @@
 package com.example.unstuck.ui.screens.calendar
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -46,81 +47,82 @@ import java.time.format.DateTimeFormatter
 fun CalendarScreen(
     viewModel: CalendarViewModel,
     modifier: Modifier = Modifier
-){
+) {
     val selectedDate by viewModel.selectedDate.collectAsStateWithLifecycle()
     val tasks by viewModel.taskState.collectAsStateWithLifecycle()
 
     val dynamicDateFormatter = remember { DateTimeFormatter.ofPattern("d MMMM", Locale("uk")) }
-    val sectionTitle = remember(selectedDate) { "Плани на ${selectedDate.format(dynamicDateFormatter)}" }
+    val sectionTitle =
+        remember(selectedDate) { "Плани на ${selectedDate.format(dynamicDateFormatter)}" }
 
     val datesWithTasks by viewModel.datesWithTasksState.collectAsStateWithLifecycle()
 
-       Column(modifier = modifier.fillMaxSize()){
-           TopAppBar(
-               title = {
-                   Text(
-                       text = "Календар",
-                       fontSize = 28.sp,
-                       fontWeight = FontWeight.Medium,
-                       modifier = Modifier.fillMaxWidth(),
-                       textAlign = TextAlign.Center
-                   )
-               },
-               windowInsets = WindowInsets(0, 0, 0, 0)
-           )
-            LazyColumn(
-                modifier = Modifier
-                    .fillMaxSize(),
-                contentPadding = PaddingValues(horizontal = 20.dp, vertical = 16.dp),
-                verticalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
+    Column(modifier = modifier.fillMaxSize()) {
+        TopAppBar(
+            title = {
+                Text(
+                    text = "Календар",
+                    fontSize = 28.sp,
+                    fontWeight = FontWeight.Medium,
+                    modifier = Modifier.fillMaxWidth(),
+                    textAlign = TextAlign.Center
+                )
+            },
+            windowInsets = WindowInsets(0, 0, 0, 0)
+        )
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize(),
+            contentPadding = PaddingValues(horizontal = 20.dp, vertical = 16.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            item {
+                CustomCalendar(
+                    selectedDate = selectedDate,
+                    onDateSelected = { date ->
+                        viewModel.changeSelectedDate(date)
+                    },
+                    datesWithTasks = datesWithTasks
+                )
+
+                Spacer(modifier = Modifier.height(24.dp))
+                Text(
+                    text = sectionTitle,
+                    style = MaterialTheme.typography.titleLarge.copy(
+                        fontSize = 22.sp,
+                        fontWeight = FontWeight.Normal
+                    ),
+                    color = MaterialTheme.colorScheme.onBackground
+                )
+                Spacer(modifier = Modifier.height(4.dp))
+            }
+
+            if (tasks.isEmpty()) {
                 item {
-                    CustomCalendar(
-                        selectedDate = selectedDate,
-                        onDateSelected = { date ->
-                            viewModel.changeSelectedDate(date)
-                        },
-                        datesWithTasks = datesWithTasks
-                    )
-
-                    Spacer(modifier = Modifier.height(24.dp))
-                    Text(
-                        text = sectionTitle,
-                        style = MaterialTheme.typography.titleLarge.copy(
-                            fontSize = 22.sp,
-                            fontWeight = FontWeight.Normal
-                        ),
-                        color = MaterialTheme.colorScheme.onBackground
-                    )
-                    Spacer(modifier = Modifier.height(4.dp))
-                }
-
-                if (tasks.isEmpty()) {
-                    item {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(vertical = 32.dp),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Text(
-                                text = "Немає планів на цей день",
-                                fontSize = 15.sp,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)
-                            )
-                        }
-                    }
-                } else {
-                    items(items = tasks, key = { it.taskId }) { task ->
-                        TaskCard(
-                            task = task,
-                            onCheckedChange = { viewModel.toggleTaskStatus(task) }
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 32.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = "Немає планів на цей день",
+                            fontSize = 15.sp,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)
                         )
                     }
+                }
+            } else {
+                items(items = tasks, key = { it.taskId }) { task ->
+                    TaskCard(
+                        task = task,
+                        onCheckedChange = { viewModel.toggleTaskStatus(task) }
+                    )
                 }
             }
         }
     }
+}
 
 @Composable
 fun CustomCalendar(
@@ -128,7 +130,7 @@ fun CustomCalendar(
     onDateSelected: (LocalDate) -> Unit,
     modifier: Modifier = Modifier,
     datesWithTasks: List<LocalDate> = emptyList()
-){
+) {
     var currentMonth by remember { mutableStateOf(YearMonth.from(selectedDate)) }
 
     val localeUk = remember { Locale("uk") }

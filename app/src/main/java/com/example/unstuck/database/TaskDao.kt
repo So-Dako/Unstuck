@@ -19,7 +19,7 @@ interface TaskDao {
     fun getTaskByCategory(category: String): Flow<List<Task>>
 
     @Query("SELECT * FROM task ORDER BY date, time")
-    fun getTaskByDate(): Flow<List<Task>>
+    fun getAllTaskFilteredByDate(): Flow<List<Task>>
 
     @Query("SELECT * FROM task WHERE date = :date ORDER BY time")
     fun getTaskByDate(date: String): Flow<List<Task>>

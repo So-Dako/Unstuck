@@ -46,6 +46,7 @@
         implementation(libs.androidx.material3)
         implementation(libs.androidx.ui)
         implementation(libs.androidx.compose.foundation)
+        implementation(libs.androidx.ui.graphics)
         debugImplementation(libs.androidx.ui.tooling)
         val room_version = "2.8.4"
         val nav3Version = "1.1.2"
@@ -83,4 +84,6 @@
         implementation("androidx.navigation3:navigation3-runtime:$nav3Version")
         implementation("androidx.navigation3:navigation3-ui:$nav3Version")
         implementation("androidx.lifecycle:lifecycle-viewmodel-navigation3:$nav3Version")
+
+        implementation("co.yml:ycharts:2.1.0")
     }
