@@ -28,6 +28,8 @@ import com.example.unstuck.ui.screens.calendar.CalendarScreen
 import com.example.unstuck.ui.screens.calendar.CalendarViewModel
 import com.example.unstuck.ui.screens.home.HomeScreen
 import com.example.unstuck.ui.screens.home.HomeViewModel
+import com.example.unstuck.ui.screens.settings.SettingsScreen
+import com.example.unstuck.ui.screens.settings.SettingsViewModel
 import com.example.unstuck.ui.screens.statistics.StatisticsScreen
 import com.example.unstuck.ui.screens.statistics.StatisticsViewModel
 
@@ -111,6 +113,8 @@ fun MainScreen(
                     )
                 }
                 MainTab.PROFILE -> {
+                    val settingsViewModel: SettingsViewModel = hiltViewModel()
+                    SettingsScreen(viewModel = settingsViewModel)
                 }
             }
         }

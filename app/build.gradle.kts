@@ -36,6 +36,7 @@
         }
         buildFeatures {
             compose = true
+            buildConfig = true
         }
     }
 
@@ -85,5 +86,5 @@
         implementation("androidx.navigation3:navigation3-ui:$nav3Version")
         implementation("androidx.lifecycle:lifecycle-viewmodel-navigation3:$nav3Version")
 
-        implementation("co.yml:ycharts:2.1.0")
+        implementation("androidx.datastore:datastore-preferences:1.1.1")
     }
