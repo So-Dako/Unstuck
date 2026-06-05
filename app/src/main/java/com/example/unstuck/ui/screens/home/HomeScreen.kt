@@ -25,7 +25,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.repeatOnLifecycle
 import com.example.unstuck.database.Task
 import com.example.unstuck.ui.screens.elements.TaskCard
 import com.example.unstuck.ui.theme.UnstuckTheme
@@ -39,6 +42,14 @@ fun HomeScreen(
     modifier: Modifier = Modifier
 ) {
     val tasks by viewModel.taskState.collectAsStateWithLifecycle()
+    val greeting by viewModel.greetingState.collectAsStateWithLifecycle()
+
+    val lifecycleOwner = LocalLifecycleOwner.current
+    LaunchedEffect(lifecycleOwner.lifecycle) {
+        lifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
+            viewModel.updateGreeting()
+        }
+    }
 
     val dateFormatter = DateTimeFormatter.ofPattern("d MMMM")
     val formattedDate = LocalDate.now().format(dateFormatter)
@@ -48,81 +59,84 @@ fun HomeScreen(
     val progressFraction =
         if (totalTasksCount > 0) completedTasksCount.toFloat() / totalTasksCount else 0f
 
+    LazyColumn(
+        modifier = Modifier.fillMaxSize(),
+        contentPadding = PaddingValues(
+            start = 16.dp,
+            top = 16.dp,
+            end = 16.dp,
+            bottom = 16.dp
+        ),
+        verticalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        item {
+            Text(
+                text = greeting,
+                fontStyle = FontStyle.Italic,
+                style = MaterialTheme.typography.headlineLarge.copy(
+                    fontWeight = FontWeight.Bold
+                )
+            )
+            Spacer(modifier = Modifier.height(16.dp))
+        }
         if (tasks.isEmpty()) {
-            Box(
+            item { Box(
                 modifier = modifier
-                    .fillMaxSize(),
+                    .fillParentMaxSize(),
                 contentAlignment = Alignment.Center
             ) {
                 Text("На сьогодні завдань немає")
-            }
+            }}
         } else {
-            LazyColumn(
-                modifier = Modifier.fillMaxSize(),
-                contentPadding = PaddingValues(
-                    start = 16.dp,
-                    top = 16.dp,
-                    end = 16.dp,
-                    bottom = 16.dp
-                ),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                item {
-                    Text(
-                        "Доброго ранку",
-                        fontStyle = FontStyle.Italic,
-                        style = MaterialTheme.typography.headlineLarge.copy(
-                            fontWeight = FontWeight.Bold
-                        )
-                    )
-                    Spacer(modifier = Modifier.height(16.dp))
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clip(RoundedCornerShape(24.dp))
-                            .background(MaterialTheme.colorScheme.surfaceVariant)
-                            .padding(horizontal = 18.dp, vertical = 16.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Column(
-                            modifier = Modifier.weight(1f)
-                        ) {
-                            Text(
-                                "Денний прогрес",
-                                style = MaterialTheme.typography.titleMedium.copy(
-                                    fontWeight = FontWeight.SemiBold
-                                )
-                            )
-                            Text(text = "$completedTasksCount з $totalTasksCount завдань виконано")
-                        }
-                        CircularProgressWithText(progress = progressFraction)
-                    }
-                    Spacer(modifier = Modifier.height(16.dp))
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
+            item {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(24.dp))
+                        .background(MaterialTheme.colorScheme.surfaceVariant)
+                        .padding(horizontal = 18.dp, vertical = 16.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Column(
+                        modifier = Modifier.weight(1f)
                     ) {
                         Text(
-                            "Справи на сьогодні",
-                            style = MaterialTheme.typography.titleLarge
-                        )
-                        Box(
-                            modifier = Modifier
-                                .background(
-                                    color = MaterialTheme.colorScheme.surfaceVariant,
-                                    shape = CircleShape
-                                )
-                                .padding(horizontal = 16.dp, vertical = 4.dp)
-                        ) {
-                            Text(
-                                formattedDate,
+                            "Денний прогрес",
+                            style = MaterialTheme.typography.titleMedium.copy(
+                                fontWeight = FontWeight.SemiBold
                             )
-                        }
+                        )
+                        Text(text = "$completedTasksCount з $totalTasksCount завдань виконано")
                     }
-                    Spacer(modifier = Modifier.height(8.dp))
+                    CircularProgressWithText(progress = progressFraction)
                 }
+                Spacer(modifier = Modifier.height(16.dp))
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        "Справи на сьогодні",
+                        style = MaterialTheme.typography.titleLarge
+                    )
+                    Box(
+                        modifier = Modifier
+                            .background(
+                                color = MaterialTheme.colorScheme.surfaceVariant,
+                                shape = CircleShape
+                            )
+                            .padding(horizontal = 16.dp, vertical = 4.dp)
+                    ) {
+                        Text(
+                            formattedDate,
+                        )
+                    }
+                }
+                Spacer(modifier = Modifier.height(8.dp))
+            }
+        }
                 items(tasks, key = { it.taskId }) { task ->
                     TaskCard(
                         task = task,
@@ -131,7 +145,6 @@ fun HomeScreen(
                 }
             }
         }
-    }
 
 @Composable
 fun CircularProgressWithText(
