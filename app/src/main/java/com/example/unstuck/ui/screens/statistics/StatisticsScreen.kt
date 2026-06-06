@@ -3,6 +3,7 @@ package com.example.unstuck.ui.screens.statistics
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -32,6 +33,11 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.unstuck.ui.screens.settings.SettingsViewModel
+import com.example.unstuck.ui.theme.DarkErrorRed
+import com.example.unstuck.ui.theme.DarkSuccessGreen
+import com.example.unstuck.ui.theme.LightErrorRed
+import com.example.unstuck.ui.theme.LightSuccessGreen
 import com.example.unstuck.ui.theme.NunitoFontFamily
 import com.example.unstuck.ui.theme.PlayfairFontFamily
 
@@ -39,6 +45,7 @@ import com.example.unstuck.ui.theme.PlayfairFontFamily
 @Composable
 fun StatisticsScreen(
     viewModel: StatisticsViewModel,
+    settingsViewModel: SettingsViewModel,
     modifier: Modifier = Modifier
 ) {
     val selectedPeriodIndex by viewModel.selectedPeriod.collectAsStateWithLifecycle()
@@ -53,6 +60,8 @@ fun StatisticsScreen(
     val percentage = (progress * 100).toInt()
 
     val periods = listOf("Тиждень", "Місяць", "Рік")
+
+    val isDark by settingsViewModel.isDarkMode.collectAsStateWithLifecycle()
 
     Column(modifier = modifier.fillMaxSize()) {
         TopAppBar(
@@ -115,6 +124,7 @@ fun StatisticsScreen(
                         value = stats.completedCount.toString(),
                         trendPercent = stats.completedTrend,
                         isInverseLogic = false,
+                        isDark = isDark,
                         modifier = Modifier.weight(1f)
                     )
                     StatisticCard(
@@ -122,6 +132,7 @@ fun StatisticsScreen(
                         value = stats.uncompletedCount.toString(),
                         trendPercent = stats.uncompletedTrend,
                         isInverseLogic = true,
+                        isDark = isDark,
                         modifier = Modifier.weight(1f)
                     )
                 }
@@ -146,6 +157,7 @@ fun StatisticCard(
     value: String,
     trendPercent: Int,
     isInverseLogic: Boolean,
+    isDark: Boolean,
     modifier: Modifier = Modifier
 ) {
     val isGoodNews = if (isInverseLogic) {
@@ -153,8 +165,6 @@ fun StatisticCard(
     } else {
         trendPercent > 0
     }
-
-    val trendColor = if (isGoodNews) Color.Green else Color.Red
 
     val trendIcon = if (trendPercent >= 0) {
         Icons.AutoMirrored.Filled.TrendingUp
@@ -165,6 +175,12 @@ fun StatisticCard(
     val sign = if (trendPercent > 0) "+" else if (trendPercent < 0) "-" else ""
     val absPercent = kotlin.math.abs(trendPercent)
     val trendText = "$sign$absPercent% до попереднього"
+
+    val trendColor = if (isGoodNews) {
+        if (isDark) DarkSuccessGreen else LightSuccessGreen
+    } else {
+        if (isDark) DarkErrorRed else LightErrorRed
+    }
 
     Card(
         modifier = modifier

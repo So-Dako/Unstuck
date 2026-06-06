@@ -108,8 +108,10 @@ fun MainScreen(
                 }
                 MainTab.STATS -> {
                     val statisticsViewModel: StatisticsViewModel = hiltViewModel()
+                    val settingsViewModel: SettingsViewModel = hiltViewModel()
                     StatisticsScreen(
-                        viewModel = statisticsViewModel
+                        viewModel = statisticsViewModel,
+                        settingsViewModel = settingsViewModel
                     )
                 }
                 MainTab.PROFILE -> {
