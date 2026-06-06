@@ -1,18 +1,12 @@
 package com.example.unstuck.ui.screens.home
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.CheckCircle
-import androidx.compose.material.icons.outlined.RadioButtonUnchecked
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.*
@@ -22,17 +16,12 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextDecoration
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.repeatOnLifecycle
-import com.example.unstuck.database.Task
 import com.example.unstuck.ui.screens.elements.TaskCard
-import com.example.unstuck.ui.theme.UnstuckTheme
-import com.google.common.collect.Multimaps.index
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
@@ -56,7 +45,7 @@ fun HomeScreen(
 
     val completedTasksCount = tasks.count { it.isDone }
     val totalTasksCount = tasks.size
-    val progressFraction =
+    val progress =
         if (totalTasksCount > 0) completedTasksCount.toFloat() / totalTasksCount else 0f
 
     LazyColumn(
@@ -108,7 +97,7 @@ fun HomeScreen(
                         )
                         Text(text = "$completedTasksCount з $totalTasksCount завдань виконано")
                     }
-                    CircularProgressWithText(progress = progressFraction)
+                    CircularProgressWithText(progress = progress)
                 }
                 Spacer(modifier = Modifier.height(16.dp))
                 Row(

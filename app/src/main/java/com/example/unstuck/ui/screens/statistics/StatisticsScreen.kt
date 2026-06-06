@@ -1,17 +1,17 @@
 package com.example.unstuck.ui.screens.statistics
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -19,28 +19,21 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.TrendingDown
 import androidx.compose.material.icons.automirrored.filled.TrendingUp
-import androidx.compose.material.icons.filled.TrendingDown
-import androidx.compose.material.icons.filled.TrendingUp
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.example.unstuck.ui.screens.calendar.CalendarViewModel
 import com.example.unstuck.ui.theme.NunitoFontFamily
 import com.example.unstuck.ui.theme.PlayfairFontFamily
-import java.time.format.DateTimeFormatter
-import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -50,6 +43,14 @@ fun StatisticsScreen(
 ) {
     val selectedPeriodIndex by viewModel.selectedPeriod.collectAsStateWithLifecycle()
     val stats by viewModel.statisticsState.collectAsStateWithLifecycle()
+
+    val totalTasksCount = stats.completedCount + stats.uncompletedCount
+    val completedTasksCount = stats.completedCount
+
+    val progress =
+        if (totalTasksCount > 0) completedTasksCount.toFloat() / totalTasksCount else 0f
+
+    val percentage = (progress * 100).toInt()
 
     val periods = listOf("Тиждень", "Місяць", "Рік")
 
@@ -87,19 +88,18 @@ fun StatisticsScreen(
                                 .weight(1f)
                                 .clip(RoundedCornerShape(20.dp))
                                 .background(
-                                    if (isSelected) MaterialTheme.colorScheme.primary.copy(alpha = 0.2f) // Або твій рожевий колір з макета
+                                    if (isSelected) MaterialTheme.colorScheme.primary.copy(alpha = 0.3f) // Або твій рожевий колір з макета
                                     else Color.Transparent
                                 )
                                 .clickable { viewModel.changePeriod(index) }
-                                .padding(vertical = 10.dp),
+                                .padding(vertical = 12.dp),
                             contentAlignment = Alignment.Center
                         ) {
                             Text(
                                 text = period,
                                 fontFamily = NunitoFontFamily,
                                 fontSize = 16.sp,
-                                fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
-                                color = if (isSelected) MaterialTheme.colorScheme.surface else MaterialTheme.colorScheme.onSurface
+                                fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal
                             )
                         }
                     }
@@ -108,7 +108,7 @@ fun StatisticsScreen(
             item {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(16.dp)
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
                     StatisticCard(
                         title = "Виконано",
@@ -125,6 +125,16 @@ fun StatisticsScreen(
                         modifier = Modifier.weight(1f)
                     )
                 }
+                Text(
+                    text = "Виконано $completedTasksCount завдань з $totalTasksCount",
+                    style = MaterialTheme.typography.titleLarge.copy(
+                        fontSize = 22.sp,
+                        fontWeight = FontWeight.Normal
+                    ),
+                    color = MaterialTheme.colorScheme.onBackground,
+                    modifier = Modifier.padding(vertical = 16.dp)
+                )
+                CircularProgress(progress = progress)
             }
         }
     }
@@ -154,10 +164,16 @@ fun StatisticCard(
 
     val sign = if (trendPercent > 0) "+" else if (trendPercent < 0) "-" else ""
     val absPercent = kotlin.math.abs(trendPercent)
-    val trendText = "$sign$absPercent% до минулого тижня"
+    val trendText = "$sign$absPercent% до попереднього"
 
     Card(
-        modifier = modifier.fillMaxWidth(),
+        modifier = modifier
+            .fillMaxWidth()
+            .border(
+                width = 2.dp,
+                color = MaterialTheme.colorScheme.primary.copy(alpha = 0.2f),
+                shape = RoundedCornerShape(16.dp)
+            ),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surface
         ),
@@ -182,23 +198,64 @@ fun StatisticCard(
             )
 
             Row(
-                verticalAlignment = Alignment.CenterVertically,
+                verticalAlignment = Alignment.Top,
                 horizontalArrangement = Arrangement.spacedBy(4.dp)
             ) {
                 Icon(
                     imageVector = trendIcon,
                     contentDescription = null,
                     tint = trendColor,
-                    modifier = Modifier.size(16.dp)
+                    modifier = Modifier
+                        .size(14.dp)
+                        .padding(top = 2.dp)
                 )
 
                 Text(
                     text = trendText,
                     color = trendColor,
                     fontSize = 12.sp,
-                    fontWeight = FontWeight.SemiBold
+                    fontWeight = FontWeight.SemiBold,
+                    maxLines = 2,
+                    modifier = Modifier.weight(1f)
                 )
             }
         }
+    }
+}
+
+@Composable
+fun CircularProgress(
+    progress: Float,
+    modifier: Modifier = Modifier
+){
+    val percentage = (progress * 100).toInt()
+
+    Box(
+        modifier = modifier
+            .fillMaxWidth()
+            .aspectRatio(1f)
+            .clip(RoundedCornerShape(24.dp))
+            .background(MaterialTheme.colorScheme.primary.copy(0.2f))
+            .padding(20.dp),
+        contentAlignment = Alignment.Center,
+    ){
+        CircularProgressIndicator(
+            progress = 1f,
+            modifier = Modifier.fillMaxSize(),
+            color = MaterialTheme.colorScheme.surface,
+            strokeWidth = 24.dp,
+            strokeCap = StrokeCap.Round
+        )
+        CircularProgressIndicator(
+            progress = progress,
+            modifier = Modifier.fillMaxSize(),
+            color = MaterialTheme.colorScheme.primary,
+            strokeWidth = 24.dp,
+            strokeCap = StrokeCap.Round
+        )
+        Text(
+            text = "$percentage%",
+            fontSize = 40.sp
+        )
     }
 }
