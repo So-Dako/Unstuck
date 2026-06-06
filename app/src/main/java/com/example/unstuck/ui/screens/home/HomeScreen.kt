@@ -1,6 +1,8 @@
 package com.example.unstuck.ui.screens.home
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.lazy.LazyColumn
@@ -21,6 +23,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.repeatOnLifecycle
+import com.example.unstuck.database.Task
 import com.example.unstuck.ui.screens.elements.TaskCard
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -28,10 +31,13 @@ import java.time.format.DateTimeFormatter
 @Composable
 fun HomeScreen(
     viewModel: HomeViewModel,
+    onEditTaskClick: (Int) -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     val tasks by viewModel.taskState.collectAsStateWithLifecycle()
     val greeting by viewModel.greetingState.collectAsStateWithLifecycle()
+
+    val clickedTask by viewModel.clickedTaskState.collectAsStateWithLifecycle()
 
     val lifecycleOwner = LocalLifecycleOwner.current
     LaunchedEffect(lifecycleOwner.lifecycle) {
@@ -47,6 +53,53 @@ fun HomeScreen(
     val totalTasksCount = tasks.size
     val progress =
         if (totalTasksCount > 0) completedTasksCount.toFloat() / totalTasksCount else 0f
+
+    clickedTask?.let { task ->
+        AlertDialog(
+            onDismissRequest = { viewModel.dismissDialog() },
+            title = {
+                Text(
+                    text = "Оберіть дію",
+                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
+                )
+            },
+            text = {
+                Text(
+                    text = "Що ви хочете зробити із завданням \"${task.name}\"?",
+                    style = MaterialTheme.typography.bodyMedium
+                )
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        onEditTaskClick(task.taskId)
+                        viewModel.dismissDialog()
+                    },
+                    colors = ButtonDefaults.textButtonColors(
+                        contentColor = MaterialTheme.colorScheme.onSurface
+                    )
+                ) {
+                    Text(
+                        "Редагувати",
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+                }
+            },
+            dismissButton = {
+                TextButton(
+                    onClick = {
+                        viewModel.deleteTask(task)
+                        viewModel.dismissDialog()
+                    },
+                    colors = ButtonDefaults.textButtonColors(
+                        contentColor = MaterialTheme.colorScheme.error
+                    )
+                ) {
+                    Text("Видалити")
+                }
+            }
+        )
+    }
 
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
@@ -129,7 +182,16 @@ fun HomeScreen(
                 items(tasks, key = { it.taskId }) { task ->
                     TaskCard(
                         task = task,
-                        onCheckedChange = { viewModel.toggleTaskStatus(task) }
+                        onCheckedChange = { viewModel.toggleTaskStatus(task) },
+                        modifier = Modifier
+                            .combinedClickable(
+                                onClick = {
+                                    viewModel.toggleTaskStatus(task)
+                                },
+                                onLongClick = {
+                                    viewModel.onTaskClicked(task)
+                                }
+                            )
                     )
                 }
             }

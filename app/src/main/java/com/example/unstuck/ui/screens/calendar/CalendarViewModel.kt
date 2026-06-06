@@ -24,6 +24,9 @@ class CalendarViewModel @Inject constructor(
     private val _selectedDate = MutableStateFlow(LocalDate.now())
     val selectedDate: StateFlow<LocalDate> = _selectedDate.asStateFlow()
 
+    private val _clickedTaskState = MutableStateFlow<Task?>(null)
+    val clickedTaskState: StateFlow<Task?> = _clickedTaskState.asStateFlow()
+
     @OptIn(ExperimentalCoroutinesApi::class)
     val taskState: StateFlow<List<Task>> = _selectedDate
         .flatMapLatest { date ->
@@ -50,6 +53,25 @@ class CalendarViewModel @Inject constructor(
     fun toggleTaskStatus(task: Task) {
         viewModelScope.launch {
             repository.updateTask(task.copy(isDone = !task.isDone))
+        }
+    }
+
+    //task dialog
+
+    fun onTaskClicked(task: Task) {
+        _clickedTaskState.value = task
+    }
+
+    fun dismissDialog() {
+        _clickedTaskState.value = null
+    }
+
+    fun deleteTask(task: Task) {
+        viewModelScope.launch {
+            viewModelScope.launch {
+                repository.deleteTask(task)
+            }
+            dismissDialog()
         }
     }
 

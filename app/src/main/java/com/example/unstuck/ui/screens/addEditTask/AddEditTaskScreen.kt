@@ -22,13 +22,16 @@ import java.time.LocalTime
 import java.time.Instant
 import java.time.ZoneOffset
 import androidx.compose.runtime.*
+import com.example.unstuck.database.Task
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddTask(
+fun AddEditTask(
     viewModel: AddEditTaskViewModel,
+    isEdit: Boolean,
     onBack: () -> Unit,
     onSaveSuccess: () -> Unit,
+    taskId: Int? = null,
     modifier: Modifier = Modifier
 ){
     val state = viewModel.addEditTaskState.collectAsStateWithLifecycle()
@@ -38,6 +41,7 @@ fun AddTask(
     LaunchedEffect(isSaved) {
         if (isSaved) {
             onSaveSuccess()
+            viewModel.resetSaveStatus()
         }
     }
 
@@ -52,7 +56,7 @@ fun AddTask(
                         )
                     }
                 },
-                title = {Text("Нове завдання")}
+                title = {Text(if (!isEdit) "Нове завдання" else "Редагувати завдання")}
             )
         }
     ){ innerPadding ->

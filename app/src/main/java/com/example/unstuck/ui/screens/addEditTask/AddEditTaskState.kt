@@ -11,5 +11,6 @@ data class AddEditTaskState(
     val notes: String = "",
     val remind: Boolean = true,
     val showDatePicker: Boolean = false,
-    val showTimePicker: Boolean = false
+    val showTimePicker: Boolean = false,
+    val isEditMode: Boolean = false
 )

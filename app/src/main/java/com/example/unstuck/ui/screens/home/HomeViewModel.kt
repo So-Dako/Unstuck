@@ -30,6 +30,10 @@ class HomeViewModel @Inject constructor(
     private val _greetingState = MutableStateFlow(getGreetingMessage())
     val greetingState: StateFlow<String> = _greetingState.asStateFlow()
 
+
+    private val _clickedTaskState = MutableStateFlow<Task?>(null)
+    val clickedTaskState: StateFlow<Task?> = _clickedTaskState.asStateFlow()
+
     fun updateGreeting() {
         _greetingState.value = getGreetingMessage()
     }
@@ -46,6 +50,25 @@ class HomeViewModel @Inject constructor(
     fun toggleTaskStatus(task: Task) {
         viewModelScope.launch {
             repository.updateTask(task.copy(isDone = !task.isDone))
+        }
+    }
+
+    //task dialog
+
+    fun onTaskClicked(task: Task) {
+        _clickedTaskState.value = task
+    }
+
+    fun dismissDialog() {
+        _clickedTaskState.value = null
+    }
+
+    fun deleteTask(task: Task) {
+        viewModelScope.launch {
+            viewModelScope.launch {
+                repository.deleteTask(task)
+            }
+            dismissDialog()
         }
     }
 }

@@ -9,6 +9,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.time.LocalDate
+import java.time.LocalTime
 import javax.inject.Inject
 
 @HiltViewModel
@@ -18,6 +20,39 @@ class AddEditTaskViewModel @Inject constructor(private val repository: TaskRepos
 
     private val _isSaved = MutableStateFlow(false)
     val isSaved = _isSaved.asStateFlow()
+
+    private var currentTaskId: Int? = null
+
+    fun initialize(taskId: Int?) {
+        _isSaved.value = false
+        currentTaskId = taskId
+        if (taskId != null) {
+            viewModelScope.launch {
+                try {
+                    val task = repository.getTaskById(taskId)
+                    task.let { existingTask ->
+                        _addEditTaskState.update {
+                            it.copy(
+                                title = existingTask.name,
+                                date = LocalDate.parse(existingTask.date),
+                                time = LocalTime.parse(existingTask.time),
+                                notes = existingTask.notes ?: "",
+                                remind = existingTask.remind,
+                                isEditMode = taskId != null
+                            )
+                        }
+                    }
+                } catch (e: Exception) {
+                }
+            }
+        } else {
+            _addEditTaskState.value = AddEditTaskState()
+        }
+    }
+
+    fun resetSaveStatus() {
+        _isSaved.value = false
+    }
 
     fun onEvent(event: AddEditTaskEvent) {
         when (event) {
@@ -38,10 +73,11 @@ class AddEditTaskViewModel @Inject constructor(private val repository: TaskRepos
                     )
                 } else {
                     val newTask = Task(
+                        taskId = currentTaskId ?: 0,
                         name = _addEditTaskState.value.title,
                         date = _addEditTaskState.value.date.toString(),
                         time = _addEditTaskState.value.time.toString(),
-                        notes = _addEditTaskState.value.notes,
+                        notes = _addEditTaskState.value.notes.takeIf { it.isNotBlank() },
                         remind = _addEditTaskState.value.remind,
                         isDone = false
                     )

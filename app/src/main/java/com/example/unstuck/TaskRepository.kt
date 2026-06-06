@@ -37,4 +37,12 @@ class TaskRepository @Inject constructor(
     fun getAllTaskFilteredByDate():Flow<List<Task>>{
         return taskDao.getAllTaskFilteredByDate()
     }
+
+    suspend fun deleteTask(task: Task){
+        taskDao.deleteTask(task)
+    }
+
+    suspend fun getTaskById(taskId: Int): Task{
+        return taskDao.getTaskById(taskId = taskId)
+    }
 }

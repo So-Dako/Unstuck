@@ -3,6 +3,7 @@ package com.example.unstuck.ui.screens.calendar
 import android.annotation.SuppressLint
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -46,16 +47,66 @@ import java.time.format.DateTimeFormatter
 @Composable
 fun CalendarScreen(
     viewModel: CalendarViewModel,
+    onEditTaskClick: (Int) -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     val selectedDate by viewModel.selectedDate.collectAsStateWithLifecycle()
     val tasks by viewModel.taskState.collectAsStateWithLifecycle()
+
+    val clickedTask by viewModel.clickedTaskState.collectAsStateWithLifecycle()
 
     val dynamicDateFormatter = remember { DateTimeFormatter.ofPattern("d MMMM", Locale("uk")) }
     val sectionTitle =
         remember(selectedDate) { "Плани на ${selectedDate.format(dynamicDateFormatter)}" }
 
     val datesWithTasks by viewModel.datesWithTasksState.collectAsStateWithLifecycle()
+
+    clickedTask?.let { task ->
+        AlertDialog(
+            onDismissRequest = { viewModel.dismissDialog() },
+            title = {
+                Text(
+                    text = "Оберіть дію",
+                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
+                )
+            },
+            text = {
+                Text(
+                    text = "Що ви хочете зробити із завданням \"${task.name}\"?",
+                    style = MaterialTheme.typography.bodyMedium
+                )
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        onEditTaskClick(task.taskId)
+                        viewModel.dismissDialog()
+                    },
+                    colors = ButtonDefaults.textButtonColors(
+                        contentColor = MaterialTheme.colorScheme.onSurface
+                    )
+                ) {
+                    Text(
+                        "Редагувати",
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+                }
+            },
+            dismissButton = {
+                TextButton(
+                    onClick = {
+                        viewModel.deleteTask(task)
+                        viewModel.dismissDialog()
+                    },
+                    colors = ButtonDefaults.textButtonColors(
+                        contentColor = MaterialTheme.colorScheme.error
+                    )
+                ) {
+                    Text("Видалити")
+                }
+            }
+        )
+    }
 
     Column(modifier = modifier.fillMaxSize()) {
         TopAppBar(
@@ -116,7 +167,16 @@ fun CalendarScreen(
                 items(items = tasks, key = { it.taskId }) { task ->
                     TaskCard(
                         task = task,
-                        onCheckedChange = { viewModel.toggleTaskStatus(task) }
+                        onCheckedChange = { viewModel.toggleTaskStatus(task) },
+                        modifier = Modifier
+                            .combinedClickable(
+                                onClick = {
+                                    viewModel.toggleTaskStatus(task)
+                                },
+                                onLongClick = {
+                                    viewModel.onTaskClicked(task)
+                                }
+                            )
                     )
                 }
             }

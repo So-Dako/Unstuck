@@ -24,6 +24,7 @@ import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.unstuck.database.Task
 import com.example.unstuck.ui.screens.calendar.CalendarScreen
 import com.example.unstuck.ui.screens.calendar.CalendarViewModel
 import com.example.unstuck.ui.screens.home.HomeScreen
@@ -36,6 +37,7 @@ import com.example.unstuck.ui.screens.statistics.StatisticsViewModel
 @Composable
 fun MainScreen(
     onNavigateToAddTask: () -> Unit,
+    onEditTaskClick: (Int) -> Unit,
     modifier: Modifier = Modifier
 ){
     var currentTab by remember { mutableStateOf(MainTab.HOME) }
@@ -97,13 +99,15 @@ fun MainScreen(
                 MainTab.HOME -> {
                     val homeViewModel: HomeViewModel = hiltViewModel()
                     HomeScreen(
-                        viewModel = homeViewModel
+                        viewModel = homeViewModel,
+                        onEditTaskClick = onEditTaskClick
                     )
                 }
                 MainTab.CALENDAR -> {
                     val calendarViewModel: CalendarViewModel = hiltViewModel()
                     CalendarScreen(
-                        viewModel = calendarViewModel
+                        viewModel = calendarViewModel,
+                        onEditTaskClick = onEditTaskClick
                     )
                 }
                 MainTab.STATS -> {
