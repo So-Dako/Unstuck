@@ -12,24 +12,34 @@ import androidx.compose.ui.*
 
 private val DarkColorScheme = darkColorScheme(
     primary = CherryBlossomPink,
-    surfaceVariant = CherryBlossomPink.copy(alpha = 0.3f),
+    onPrimary = VeryDarkPink,
 
     background = VeryDarkPink,
-    surface = VeryDarkPink,
+    onBackground = CherryBlossomPink,
 
+    surface = VeryDarkPink,
     onSurface = CherryBlossomPink,
-    onBackground = CherryBlossomPink
+
+    surfaceVariant = CherryBlossomPink.copy(alpha = 0.15f),
+    onSurfaceVariant = CherryBlossomPink,
+
+    outline = CherryBlossomPink.copy(alpha = 0.2f)
 )
 
 private val LightColorScheme = lightColorScheme(
     primary = CherryBlossomPink,
-    surfaceVariant = CherryBlossomPink.copy(alpha = 0.3f),
+    onPrimary = Color.White,
 
     background = Color.White,
-    surface = Color.White,
+    onBackground = CharcoalBlue,
 
+    surface = Color.White,
     onSurface = CharcoalBlue,
-    onBackground = CharcoalBlue
+
+    surfaceVariant = CherryBlossomPink.copy(alpha = 0.15f),
+    onSurfaceVariant = CharcoalBlue,
+
+    outline = CharcoalBlue.copy(alpha = 0.15f)
 
     /* Other default colors to override
     background = Color(0xFFFFFBFE),

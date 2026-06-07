@@ -13,6 +13,8 @@ val Pink40 = Color(0xFF7D5260)
 val CherryBlossomPink = Color(0xFFFFB7C5)
 val CharcoalBlue = Color(0xFF374151)
 val VeryDarkPink = Color(0xFF1a1216)
+val LightGray = Color(0xFFF3F4F6)
+val SoftDarkGray = Color(0xFF261C22)
 
 val LightSuccessGreen = Color(0xFF2E7D32)
 val LightErrorRed = Color(0xFFC62828)
