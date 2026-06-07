@@ -24,6 +24,7 @@ import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.unstuck.database.Task
 import com.example.unstuck.ui.screens.calendar.CalendarScreen
 import com.example.unstuck.ui.screens.calendar.CalendarViewModel
@@ -36,11 +37,12 @@ import com.example.unstuck.ui.screens.statistics.StatisticsViewModel
 
 @Composable
 fun MainScreen(
+    viewModel: MainViewModel,
     onNavigateToAddTask: () -> Unit,
     onEditTaskClick: (Int) -> Unit,
     modifier: Modifier = Modifier
 ){
-    var currentTab by remember { mutableStateOf(MainTab.HOME) }
+    val currentTab by viewModel.currentTab.collectAsStateWithLifecycle()
     val lineColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.15f)
 
     Scaffold(
@@ -76,13 +78,14 @@ fun MainScreen(
                 MainTab.entries.forEach { tab ->
                     NavigationBarItem(
                         selected = currentTab == tab,
-                        onClick = { currentTab = tab },
+                        onClick = { viewModel.changeTab(tab) },
                         icon = { Icon(imageVector = tab.icon, contentDescription = tab.label) },
                         label = { Text(tab.label) },
                         colors = NavigationBarItemDefaults.colors(
                             selectedIconColor = MaterialTheme.colorScheme.primary,
                             selectedTextColor = MaterialTheme.colorScheme.primary,
-                            unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
+                            unselectedIconColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f),
+                            unselectedTextColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f),
                             indicatorColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)
                         )
                     )

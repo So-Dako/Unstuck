@@ -10,6 +10,7 @@ import androidx.navigation3.ui.NavDisplay
 import com.example.unstuck.ui.screens.addEditTask.AddEditTaskViewModel
 import com.example.unstuck.ui.screens.addEditTask.AddEditTask
 import com.example.unstuck.ui.screens.main.MainScreen
+import com.example.unstuck.ui.screens.main.MainViewModel
 
 @Composable
 fun AppNavigation(backStack: SnapshotStateList<Screens>){
@@ -18,7 +19,9 @@ fun AppNavigation(backStack: SnapshotStateList<Screens>){
         onBack = { backStack.removeLastOrNull() },
         entryProvider = entryProvider {
             entry<Screens.Main> {
+                val mainViewModel: MainViewModel = viewModel()
                 MainScreen(
+                    viewModel = mainViewModel,
                     onNavigateToAddTask = { backStack.add(Screens.AddEditTask()) },
                     onEditTaskClick = { taskId ->
                         backStack.add(Screens.AddEditTask(taskId = taskId))
