@@ -23,7 +23,9 @@ import java.time.Instant
 import java.time.ZoneOffset
 import androidx.compose.runtime.*
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import com.example.unstuck.database.Task
+import com.example.unstuck.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -55,11 +57,13 @@ fun AddEditTask(
                     IconButton(onClick = onBack){
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBackIos,
-                            contentDescription = "Назад"
+                            contentDescription = stringResource(id = R.string.cd_back)
                         )
                     }
                 },
-                title = {Text(if (!isEdit) "Нове завдання" else "Редагувати завдання")}
+                title = {Text(if (!isEdit) stringResource(id = R.string.title_new_task)
+                else stringResource(id = R.string.title_edit_task)
+                )}
             )
         }
     ){ innerPadding ->
@@ -69,17 +73,18 @@ fun AddEditTask(
             .padding(16.dp)
         ){
             Text(
-                "Назва завдання",
-                color = if (hasError) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface
+                stringResource(id = R.string.label_task_name),
+                color = if (hasError) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface,
+                modifier = Modifier.padding(start = 16.dp)
             )
             OutlinedTextField(
                 value = state.value.title,
                 onValueChange = { viewModel.onEvent(AddEditTaskEvent.OnTitleChanged(it)) },
                 isError = hasError,
                 supportingText = {
-                    if (hasError) {
+                    state.value.titleError?.let { errorRes ->
                         Text(
-                            text = state.value.titleError ?: "",
+                            text = stringResource(id = errorRes),
                             color = MaterialTheme.colorScheme.error
                         )
                     }
@@ -101,7 +106,8 @@ fun AddEditTask(
                 Column(
                     modifier = Modifier.weight(1f)
                 ){
-                    Text("Дата")
+                    Text(stringResource(id = R.string.label_date),
+                        modifier = Modifier.padding(start = 16.dp))
                     OutlinedTextField(
                         value = state.value.date.toFormattedString(),
                         onValueChange = { },
@@ -131,7 +137,8 @@ fun AddEditTask(
                 Column(
                     modifier = Modifier.weight(1f)
                 ){
-                    Text("Час")
+                    Text(stringResource(id = R.string.label_time),
+                        modifier = Modifier.padding(start = 16.dp))
                     OutlinedTextField(
                         value = state.value.time.toFormattedString(),
                         onValueChange = {},
@@ -158,11 +165,11 @@ fun AddEditTask(
                     )
                 }
             }
-            Text("Нотатки")
+            Text(stringResource(id = R.string.label_notes),
+                modifier = Modifier.padding(start = 16.dp))
             OutlinedTextField(
                 value = state.value.notes,
                 onValueChange = { viewModel.onEvent(AddEditTaskEvent.OnNotesChanged(it)) },
-                //state = rememberTextFieldState(initialText = "Не забудь новий лавандовий килимок для йоги. Виконай 30-хвилинний комплекс для гнучкості від Адрієн."),
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedBorderColor = MaterialTheme.colorScheme.primary,
                     unfocusedBorderColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f)
@@ -180,7 +187,7 @@ fun AddEditTask(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ){
-                Text("Нагадати мені",
+                Text(stringResource(id = R.string.label_remind_me),
                     fontSize = 16.sp,
                     modifier = Modifier.weight(1f))
                 Switch(
@@ -196,7 +203,7 @@ fun AddEditTask(
                     .padding(vertical = 8.dp)
             ){
                 Text (
-                    "Зберегти зміни",
+                    stringResource(id = R.string.btn_save_changes),
                     fontSize = 18.sp,
                     modifier = Modifier.padding(vertical = 4.dp)
                 )
@@ -226,12 +233,12 @@ fun AddEditTask(
                         }
                     }
                 ) {
-                    Text("ОК")
+                    Text(stringResource(id = R.string.btn_ok))
                 }
             },
             dismissButton = {
                 TextButton(onClick = { viewModel.onEvent(AddEditTaskEvent.OnDismissDatePicker) }) {
-                    Text("Скасувати")
+                    Text(stringResource(id = R.string.btn_cancel))
                 }
             }
         ) {
@@ -257,12 +264,12 @@ fun AddEditTask(
                     )
                     viewModel.onEvent(AddEditTaskEvent.OnTimeSelected(time))
                 }) {
-                    Text("OK")
+                    Text(stringResource(id = R.string.btn_ok))
                 }
             },
             dismissButton = {
                 TextButton(onClick = { viewModel.onEvent(AddEditTaskEvent.OnDismissTimePicker) }) {
-                    Text("Скасувати")
+                    Text(stringResource(id = R.string.btn_cancel))
                 }
             },
             text = { TimePicker(state = timePickerState) }

@@ -2,6 +2,7 @@ package com.example.unstuck.ui.screens.addEditTask
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.unstuck.R
 import com.example.unstuck.TaskRepository
 import com.example.unstuck.database.Task
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -70,7 +71,7 @@ class AddEditTaskViewModel @Inject constructor(private val repository: TaskRepos
 
                 if (currentTitle.isEmpty()) {
                     _addEditTaskState.value = _addEditTaskState.value.copy(
-                        titleError = "Назва не може бути порожньою!"
+                        titleError = R.string.error_empty_title
                     )
                 } else {
                     val newTask = Task(

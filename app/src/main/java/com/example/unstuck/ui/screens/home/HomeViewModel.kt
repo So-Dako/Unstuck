@@ -2,6 +2,7 @@ package com.example.unstuck.ui.screens.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.unstuck.R
 import com.example.unstuck.TaskRepository
 import com.example.unstuck.database.Task
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -28,7 +29,7 @@ class HomeViewModel @Inject constructor(
         )
 
     private val _greetingState = MutableStateFlow(getGreetingMessage())
-    val greetingState: StateFlow<String> = _greetingState.asStateFlow()
+    val greetingState: StateFlow<Int> = _greetingState.asStateFlow()
 
 
     private val _clickedTaskState = MutableStateFlow<Task?>(null)
@@ -38,12 +39,12 @@ class HomeViewModel @Inject constructor(
         _greetingState.value = getGreetingMessage()
     }
 
-    private fun getGreetingMessage(): String {
+    private fun getGreetingMessage(): Int {
         return when (LocalTime.now().hour) {
-            in 6..11 -> "Доброго ранку"
-            in 12..16 -> "Добрий день"
-            in 17..22 -> "Добрий вечір"
-            else -> "Доброї нічі"
+            in 6..11 -> R.string.greeting_morning
+            in 12..16 -> R.string.greeting_day
+            in 17..22 -> R.string.greeting_evening
+            else -> R.string.greeting_night
         }
     }
 

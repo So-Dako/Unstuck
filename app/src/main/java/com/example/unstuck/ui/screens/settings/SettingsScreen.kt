@@ -19,13 +19,18 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.unstuck.BuildConfig
+import com.example.unstuck.R
 import com.example.unstuck.ui.screens.calendar.CalendarViewModel
 import com.example.unstuck.ui.theme.NunitoFontFamily
 import com.example.unstuck.ui.theme.UnstuckTheme
@@ -40,14 +45,19 @@ fun SettingsScreen(
 ) {
 
     val isDarkMode by viewModel.isDarkMode.collectAsStateWithLifecycle()
+    val isLanguageMenuExpanded by viewModel.isLanguageMenuExpanded.collectAsStateWithLifecycle()
 
     val appVersion = BuildConfig.VERSION_NAME ?: "1.0.0"
+
+    var rowWidth by remember { mutableStateOf(0.dp) }
+    val density = LocalDensity.current
+
 
     Column(modifier = modifier.fillMaxSize()) {
         TopAppBar(
             title = {
                 Text(
-                    text = "Налаштування",
+                    text = stringResource(id = R.string.settings_title),
                     fontSize = 28.sp,
                     fontWeight = FontWeight.Medium,
                     modifier = Modifier.fillMaxWidth(),
@@ -74,23 +84,58 @@ fun SettingsScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                     ) {
-                        SettingsRow(
-                            icon = Icons.Default.Palette,
-                            title = "App Theme",
-                            subtitle = "Sweetheart (Active)",
-                            onClick = { }
-                        )
+                        Box(modifier = Modifier
+                            .fillMaxWidth()
+                            .onGloballyPositioned { coordinates ->
+                                rowWidth = with(density) { coordinates.size.width.toDp() }
+                            }
+                        ){
+                            SettingsRow(
+                                icon = Icons.Default.Language,
+                                title = stringResource(id = R.string.settings_language_title),
+                                subtitle = stringResource(id = R.string.settings_language_subtitle),
+                                onClick = { viewModel.languageMenuExpanded() }
+                            )
 
-                        SettingsRow(
-                            icon = Icons.Default.Language,
-                            title = "Language",
-                            subtitle = "English",
-                            onClick = { }
-                        )
+                            DropdownMenu(
+                                expanded = isLanguageMenuExpanded,
+                                onDismissRequest = { viewModel.languageMenuDismiss() },
+                                offset = DpOffset(x = 0.dp, y = 0.dp),
+                                modifier = Modifier
+                                    .width(rowWidth)
+                                    .background(MaterialTheme.colorScheme.surfaceVariant)
+                                    .clip(RoundedCornerShape(16.dp))
+                            ) {
+                                DropdownMenuItem(
+                                    text = {
+                                        Text(
+                                            text = stringResource(id = R.string.lang_ukrainian),
+                                            fontFamily = NunitoFontFamily
+                                        )
+                                    },
+                                    onClick = {
+                                        viewModel.setLocale("uk")
+                                        viewModel.languageMenuDismiss()
+                                    }
+                                )
+                                DropdownMenuItem(
+                                    text = {
+                                        Text(
+                                            text = stringResource(id = R.string.lang_english),
+                                            fontFamily = NunitoFontFamily
+                                        )
+                                    },
+                                    onClick = {
+                                        viewModel.setLocale("en")
+                                        viewModel.languageMenuDismiss()
+                                    }
+                                )
+                            }
+                        }
 
                         SettingsToggleRow(
                             icon = Icons.Default.DarkMode,
-                            title = "Dark Mode",
+                            title = stringResource(id = R.string.settings_dark_mode),
                             checked = isDarkMode,
                             onCheckedChange = { viewModel.toggleDarkMode(it) }
                         )
@@ -100,7 +145,7 @@ fun SettingsScreen(
 
             item {
                 Text(
-                    text = "VERSION $appVersion • BUILT WITH LOVE",
+                    text = stringResource(id = R.string.settings_footer, appVersion),
                     fontSize = 11.sp,
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier.fillMaxWidth(),

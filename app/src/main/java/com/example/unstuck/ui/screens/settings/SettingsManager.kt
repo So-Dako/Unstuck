@@ -3,6 +3,7 @@ package com.example.unstuck.ui.screens.settings
 import android.content.Context
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import dagger.hilt.android.qualifiers.ApplicationContext
 import jakarta.inject.Inject
@@ -17,6 +18,13 @@ class SettingsManager @Inject constructor(
     @ApplicationContext private val context: Context
 ) {
     private val darkModeKey = booleanPreferencesKey("dark_mode")
+    private val languageKey = stringPreferencesKey("language")
+
+    suspend fun saveLanguage(code: String) {
+        context.dataStore.edit { preferences ->
+            preferences[languageKey] = code
+        }
+    }
 
     val isDarkMode: Flow<Boolean> = context.dataStore.data.map { preferences ->
         preferences[darkModeKey] ?: false

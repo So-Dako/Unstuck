@@ -5,7 +5,7 @@ import java.time.LocalTime
 
 data class AddEditTaskState(
     val title: String = "",
-    val titleError: String? = null,
+    val titleError: Int? = null,
     val date: LocalDate = LocalDate.now(),
     val time: LocalTime = LocalTime.of(0,0),
     val notes: String = "",

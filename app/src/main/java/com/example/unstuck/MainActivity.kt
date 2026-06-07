@@ -1,10 +1,12 @@
 package com.example.unstuck
 
+import android.content.Context
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
+import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.materialIcon
@@ -21,7 +23,9 @@ import com.example.unstuck.ui.screens.home.HomeScreen
 import com.example.unstuck.ui.theme.UnstuckTheme
 import dagger.hilt.android.AndroidEntryPoint
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.core.view.WindowCompat.enableEdgeToEdge
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.unstuck.ui.screens.settings.SettingsViewModel
 
@@ -30,11 +34,32 @@ class MainActivity : ComponentActivity() {
 
     private val settingsViewModel: SettingsViewModel by viewModels()
 
+    override fun attachBaseContext(newBase: Context) {
+        val prefs = newBase.getSharedPreferences("lang", Context.MODE_PRIVATE)
+        val lang = prefs.getString("language", "en") ?: "en"
+        val locale = java.util.Locale(lang)
+        java.util.Locale.setDefault(locale)
+        val config = newBase.resources.configuration
+        config.setLocale(locale)
+        super.attachBaseContext(newBase.createConfigurationContext(config))
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
             val isDarkMode by settingsViewModel.isDarkMode.collectAsStateWithLifecycle()
+            val pendingLanguage by settingsViewModel.pendingLanguageChange.collectAsStateWithLifecycle()
+
+            LaunchedEffect(pendingLanguage) {
+                pendingLanguage?.let { code ->
+                    getSharedPreferences("lang", Context.MODE_PRIVATE)
+                        .edit().putString("language", code).apply()
+                    settingsViewModel.onLanguageChangeHandled()
+                    recreate()
+                }
+            }
+
             UnstuckTheme(darkTheme = isDarkMode) {
                 Surface(
                     color = MaterialTheme.colorScheme.surface,

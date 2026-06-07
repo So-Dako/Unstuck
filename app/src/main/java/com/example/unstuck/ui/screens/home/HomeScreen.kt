@@ -16,6 +16,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -27,6 +28,7 @@ import com.example.unstuck.database.Task
 import com.example.unstuck.ui.screens.elements.TaskCard
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
+import com.example.unstuck.R
 
 @Composable
 fun HomeScreen(
@@ -59,13 +61,13 @@ fun HomeScreen(
             onDismissRequest = { viewModel.dismissDialog() },
             title = {
                 Text(
-                    text = "Оберіть дію",
+                    text = stringResource(id = R.string.dialog_title),
                     style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
                 )
             },
             text = {
                 Text(
-                    text = "Що ви хочете зробити із завданням \"${task.name}\"?",
+                    text = stringResource(id = R.string.dialog_text, task.name),
                     style = MaterialTheme.typography.bodyMedium
                 )
             },
@@ -80,7 +82,7 @@ fun HomeScreen(
                     )
                 ) {
                     Text(
-                        "Редагувати",
+                        stringResource(id = R.string.btn_edit),
                         color = MaterialTheme.colorScheme.onSurface
                     )
                 }
@@ -95,7 +97,7 @@ fun HomeScreen(
                         contentColor = MaterialTheme.colorScheme.error
                     )
                 ) {
-                    Text("Видалити")
+                    Text(stringResource(id = R.string.btn_delete))
                 }
             }
         )
@@ -113,7 +115,7 @@ fun HomeScreen(
     ) {
         item {
             Text(
-                text = greeting,
+                text = stringResource(id = greeting),
                 fontStyle = FontStyle.Italic,
                 style = MaterialTheme.typography.headlineLarge.copy(
                     fontWeight = FontWeight.Bold
@@ -127,7 +129,7 @@ fun HomeScreen(
                     .fillParentMaxSize(),
                 contentAlignment = Alignment.Center
             ) {
-                Text("На сьогодні завдань немає")
+                Text(stringResource(id = R.string.no_tasks_today))
             }}
         } else {
             item {
@@ -143,12 +145,16 @@ fun HomeScreen(
                         modifier = Modifier.weight(1f)
                     ) {
                         Text(
-                            "Денний прогрес",
+                            stringResource(id = R.string.daily_progress),
                             style = MaterialTheme.typography.titleMedium.copy(
                                 fontWeight = FontWeight.SemiBold
                             )
                         )
-                        Text(text = "$completedTasksCount з $totalTasksCount завдань виконано")
+                        Text(text = stringResource(
+                            id = R.string.tasks_progress_summary,
+                            completedTasksCount,
+                            totalTasksCount
+                        ))
                     }
                     CircularProgressWithText(progress = progress)
                 }
@@ -160,7 +166,7 @@ fun HomeScreen(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        "Справи на сьогодні",
+                        stringResource(id = R.string.tasks_today_title),
                         style = MaterialTheme.typography.titleLarge
                     )
                     Box(

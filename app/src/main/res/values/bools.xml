@@ -1,0 +1,3 @@
+<resources>
+    <bool name="auto_store_locales">true</bool>
+</resources>

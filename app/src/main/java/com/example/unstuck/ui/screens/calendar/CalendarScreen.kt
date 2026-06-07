@@ -38,10 +38,12 @@ import java.util.Locale
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.unstuck.ui.screens.elements.TaskCard
 import java.time.format.DateTimeFormatter
+import com.example.unstuck.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -55,9 +57,17 @@ fun CalendarScreen(
 
     val clickedTask by viewModel.clickedTaskState.collectAsStateWithLifecycle()
 
-    val dynamicDateFormatter = remember { DateTimeFormatter.ofPattern("d MMMM", Locale("uk")) }
-    val sectionTitle =
-        remember(selectedDate) { "Плани на ${selectedDate.format(dynamicDateFormatter)}" }
+    val currentLocale = remember { Locale.getDefault() }
+    val dynamicDateFormatter = remember(currentLocale) {
+        when (currentLocale.language) {
+            "uk" -> DateTimeFormatter.ofPattern("d MMMM", currentLocale)
+            else -> DateTimeFormatter.ofPattern("MMMM d", currentLocale)
+        }
+    }
+    val plansFor = stringResource(R.string.plans_for_date_prefix)
+    val sectionTitle = remember(selectedDate, plansFor) {
+        "$plansFor ${selectedDate.format(dynamicDateFormatter)}"
+    }
 
     val datesWithTasks by viewModel.datesWithTasksState.collectAsStateWithLifecycle()
 
@@ -66,13 +76,13 @@ fun CalendarScreen(
             onDismissRequest = { viewModel.dismissDialog() },
             title = {
                 Text(
-                    text = "Оберіть дію",
+                    text = stringResource(id = R.string.dialog_title),
                     style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
                 )
             },
             text = {
                 Text(
-                    text = "Що ви хочете зробити із завданням \"${task.name}\"?",
+                    text = stringResource(id = R.string.dialog_text, task.name),
                     style = MaterialTheme.typography.bodyMedium
                 )
             },
@@ -87,7 +97,7 @@ fun CalendarScreen(
                     )
                 ) {
                     Text(
-                        "Редагувати",
+                        stringResource(id = R.string.btn_edit),
                         color = MaterialTheme.colorScheme.onSurface
                     )
                 }
@@ -102,7 +112,7 @@ fun CalendarScreen(
                         contentColor = MaterialTheme.colorScheme.error
                     )
                 ) {
-                    Text("Видалити")
+                    Text(stringResource(id = R.string.btn_delete))
                 }
             }
         )
@@ -112,7 +122,7 @@ fun CalendarScreen(
         TopAppBar(
             title = {
                 Text(
-                    text = "Календар",
+                    text = stringResource(id = R.string.calendar_title),
                     fontSize = 28.sp,
                     fontWeight = FontWeight.Medium,
                     modifier = Modifier.fillMaxWidth(),
@@ -157,7 +167,7 @@ fun CalendarScreen(
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
-                            text = "Немає планів на цей день",
+                            text = stringResource(id = R.string.no_plans_today),
                             fontSize = 15.sp,
                             color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)
                         )
@@ -193,9 +203,9 @@ fun CustomCalendar(
 ) {
     var currentMonth by remember { mutableStateOf(YearMonth.from(selectedDate)) }
 
-    val localeUk = remember { Locale("uk") }
-    val monthName = currentMonth.month.getDisplayName(TextStyle.FULL_STANDALONE, localeUk)
-        .replaceFirstChar { if (it.isLowerCase()) it.titlecase(localeUk) else it.toString() }
+    val currentLocale = Locale.getDefault()
+    val monthName = currentMonth.month.getDisplayName(TextStyle.FULL_STANDALONE, currentLocale)
+        .replaceFirstChar { if (it.isLowerCase()) it.titlecase(currentLocale) else it.toString() }
     val yearTitle = currentMonth.year
 
     val daysInMonth = currentMonth.lengthOfMonth()
@@ -203,7 +213,15 @@ fun CustomCalendar(
 
     val emptySlotsBefore = firstDayOfWeek - 1
 
-    val daysOfWeekHeaders = listOf("ПН", "ВТ", "СР", "ЧТ", "ПТ", "СБ", "НД")
+    val daysOfWeekHeaders = listOf(
+        stringResource(id = R.string.day_mon),
+        stringResource(id = R.string.day_tue),
+        stringResource(id = R.string.day_wed),
+        stringResource(id = R.string.day_thu),
+        stringResource(id = R.string.day_fri),
+        stringResource(id = R.string.day_sat),
+        stringResource(id = R.string.day_sun)
+    )
 
     Card(
         modifier = modifier
@@ -227,7 +245,7 @@ fun CustomCalendar(
                 IconButton(onClick = { currentMonth = currentMonth.minusMonths(1) }) {
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.KeyboardArrowLeft,
-                        contentDescription = "Попередній місяць",
+                        contentDescription = stringResource(id = R.string.cd_prev_month),
                         tint = MaterialTheme.colorScheme.primary.copy(alpha = 0.8f)
                     )
                 }
@@ -243,7 +261,7 @@ fun CustomCalendar(
                 IconButton(onClick = { currentMonth = currentMonth.plusMonths(1) }) {
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
-                        contentDescription = "Наступний місяць",
+                        contentDescription = stringResource(id = R.string.cd_next_month),
                         tint = MaterialTheme.colorScheme.primary.copy(alpha = 0.8f)
                     )
                 }
@@ -306,7 +324,7 @@ fun CustomCalendar(
                             fontFamily = NunitoFontFamily,
                             fontSize = 15.sp,
                             fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
-                            color = if (isSelected) Color.White else MaterialTheme.colorScheme.onSurface
+                            color = if (isSelected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurface
                         )
 
                         if (hasTask && !isSelected) {
@@ -321,7 +339,7 @@ fun CustomCalendar(
                             Box(
                                 modifier = Modifier
                                     .size(4.dp)
-                                    .background(Color.White, CircleShape)
+                                    .background(MaterialTheme.colorScheme.onPrimary, CircleShape)
                             )
                         }
                     }

@@ -28,6 +28,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.res.pluralStringResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -40,6 +42,7 @@ import com.example.unstuck.ui.theme.LightErrorRed
 import com.example.unstuck.ui.theme.LightSuccessGreen
 import com.example.unstuck.ui.theme.NunitoFontFamily
 import com.example.unstuck.ui.theme.PlayfairFontFamily
+import com.example.unstuck.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -59,7 +62,11 @@ fun StatisticsScreen(
 
     val percentage = (progress * 100).toInt()
 
-    val periods = listOf("Тиждень", "Місяць", "Рік")
+    val periods = listOf(
+        stringResource(id = R.string.period_week),
+        stringResource(id = R.string.period_month),
+        stringResource(id = R.string.period_year)
+    )
 
     val isDark by settingsViewModel.isDarkMode.collectAsStateWithLifecycle()
 
@@ -67,7 +74,7 @@ fun StatisticsScreen(
         TopAppBar(
             title = {
                 Text(
-                    text = "Статистика",
+                    text = stringResource(id = R.string.statistics_title),
                     fontSize = 28.sp,
                     fontWeight = FontWeight.Medium,
                     modifier = Modifier.fillMaxWidth(),
@@ -120,7 +127,7 @@ fun StatisticsScreen(
                     horizontalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
                     StatisticCard(
-                        title = "Виконано",
+                        title = stringResource(id = R.string.stat_completed),
                         value = stats.completedCount.toString(),
                         trendPercent = stats.completedTrend,
                         trendCount = stats.completedCountTrend,
@@ -130,7 +137,7 @@ fun StatisticsScreen(
                         modifier = Modifier.weight(1f)
                     )
                     StatisticCard(
-                        title = "Не виконано",
+                        title = stringResource(id = R.string.stat_uncompleted),
                         value = stats.uncompletedCount.toString(),
                         trendPercent = stats.uncompletedTrend,
                         trendCount = stats.completedCountTrend,
@@ -141,7 +148,12 @@ fun StatisticsScreen(
                     )
                 }
                 Text(
-                    text = "Виконано $completedTasksCount завдань з $totalTasksCount",
+                    text = pluralStringResource(
+                        id = R.plurals.tasks_summary_plural,
+                        count = completedTasksCount,
+                        completedTasksCount,
+                        totalTasksCount
+                    ),
                     style = MaterialTheme.typography.titleLarge.copy(
                         fontSize = 22.sp,
                         fontWeight = FontWeight.Normal
@@ -179,15 +191,21 @@ fun StatisticCard(
     }
 
     val periodWord = when(periodIndex) {
-        0 -> "тиж"
-        1 -> "міс"
-        else -> "рік"
+        0 -> stringResource(id = R.string.period_short_week)
+        1 -> stringResource(id = R.string.period_short_month)
+        else -> stringResource(id = R.string.period_short_year)
     }
 
     val sign = if (trendPercent > 0) "+" else if (trendPercent < 0) "-" else ""
     val absCount = kotlin.math.abs(trendCount)
     val absPercent = kotlin.math.abs(trendPercent)
-    val trendText = "$sign$absCount ($absPercent% / $periodWord)"
+    val trendText = stringResource(
+        id = R.string.trend_format,
+        sign,
+        absCount,
+        absPercent,
+        periodWord
+    )
 
     val trendColor = if (trendPercent == 0) {
         MaterialTheme.colorScheme.onSurfaceVariant

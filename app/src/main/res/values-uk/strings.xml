@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Unstuck</string>
+    <string name="tab_home">Головна</string>
+    <string name="tab_calendar">Календар</string>
+    <string name="tab_stats">Статистика</string>
+    <string name="tab_settings">Інфо</string>
+
+    <string name="no_tasks_today">На сьогодні завдань немає</string>
+    <string name="daily_progress">Денний прогрес</string>
+    <string name="tasks_progress_summary">%1$d з %2$d завдань виконано</string>
+    <string name="tasks_today_title">Справи на сьогодні</string>
+    <string name="greeting_morning">Доброго ранку</string>
+    <string name="greeting_day">Добрий день</string>
+    <string name="greeting_evening">Добрий вечір</string>
+    <string name="greeting_night">Доброї нічі</string>
+
+    <string name="dialog_title">Оберіть дію</string>
+    <string name="dialog_text">Що ви хочете зробити із завданням \"%1$s\"?</string>
+    <string name="btn_edit">Редагувати</string>
+    <string name="btn_delete">Видалити</string>
+
+    <string name="calendar_title">Календар</string>
+    <string name="no_plans_today">Немає планів на цей день</string>
+    <string name="cd_prev_month">Попередній місяць</string>
+    <string name="cd_next_month">Наступний місяць</string>
+
+    <string name="day_mon">ПН</string>
+    <string name="day_tue">ВТ</string>
+    <string name="day_wed">СР</string>
+    <string name="day_thu">ЧТ</string>
+    <string name="day_fri">ПТ</string>
+    <string name="day_sat">СБ</string>
+    <string name="day_sun">НД</string>
+
+    <string name="cd_back">Назад</string>
+    <string name="title_new_task">Нове завдання</string>
+    <string name="title_edit_task">Редагувати завдання</string>
+    <string name="label_task_name">Назва завдання</string>
+    <string name="label_date">Дата</string>
+    <string name="label_time">Час</string>
+    <string name="label_notes">Нотатки</string>
+    <string name="label_remind_me">Нагадати мені</string>
+    <string name="btn_save_changes">Зберегти зміни</string>
+    <string name="btn_ok">ОК</string>
+    <string name="btn_cancel">Скасувати</string>
+
+    <string name="error_empty_title">Назва завдання не може бути порожньою</string>
+
+    <string name="statistics_title">Статистика</string>
+    <string name="period_week">Тиждень</string>
+    <string name="period_month">Місяць</string>
+    <string name="period_year">Рік</string>
+    <string name="stat_completed">Виконано</string>
+    <string name="stat_uncompleted">Не виконано</string>
+
+    <plurals name="tasks_summary_plural">
+        <item quantity="one">Виконано %1$d завдання з %2$d</item>
+        <item quantity="few">Виконано %1$d завдання з %2$d</item>
+        <item quantity="many">Виконано %1$d завдань з %2$d</item>
+        <item quantity="other">Виконано %1$d завдань з %2$d</item>
+    </plurals>
+
+    <string name="trend_format">%1$s%2$d (%3$d%% / %4$s)</string>
+    <string name="period_short_week">тиж</string>
+    <string name="period_short_month">міс</string>
+    <string name="period_short_year">рік</string>
+
+    <string name="settings_title">Налаштування</string>
+    <string name="settings_language_title">Мова</string>
+    <string name="settings_language_subtitle">Українська</string>
+    <string name="settings_dark_mode">Темна тема</string>
+    <string name="settings_footer">ВЕРСІЯ %1$s • ЗРОБЛЕНО З ЛЮБОВ\'Ю</string>
+
+    <string name="lang_sheet_title">Оберіть мову</string>
+    <string name="lang_ukrainian">Українська (UK)</string>
+    <string name="lang_english">English (EN)</string>
+
+    <string name="plans_for_date_prefix">Плани на</string>
+</resources>
