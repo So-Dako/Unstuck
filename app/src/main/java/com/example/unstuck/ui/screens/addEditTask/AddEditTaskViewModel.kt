@@ -12,6 +12,7 @@ import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.LocalTime
 import javax.inject.Inject
+import com.example.unstuck.reminder.TaskReminderManager
 
 @HiltViewModel
 class AddEditTaskViewModel @Inject constructor(private val repository: TaskRepository) : ViewModel() {
@@ -64,7 +65,7 @@ class AddEditTaskViewModel @Inject constructor(private val repository: TaskRepos
                 _addEditTaskState.update { it.copy(remind = event.remind) }
             }
 
-            AddEditTaskEvent.OnSaveTask -> {
+            is AddEditTaskEvent.OnSaveTask -> {
                 val currentTitle = _addEditTaskState.value.title.trim()
 
                 if (currentTitle.isEmpty()) {
@@ -83,7 +84,18 @@ class AddEditTaskViewModel @Inject constructor(private val repository: TaskRepos
                     )
                     viewModelScope.launch {
                         try {
-                            repository.addTask(newTask)
+                            val generatedId = repository.upsertTask(newTask)
+                            val taskForReminder = if (newTask.taskId == 0) {
+                                newTask.copy(taskId = generatedId)
+                            } else {
+                                newTask
+                            }
+
+                            if (taskForReminder.remind) {
+                                TaskReminderManager.scheduleReminder(event.context, taskForReminder)
+                            } else {
+                                TaskReminderManager.cancelReminder(event.context, taskForReminder.taskId)
+                            }
                             _addEditTaskState.value = AddEditTaskState()
                             _isSaved.value = true
                         } catch (e: Exception) {

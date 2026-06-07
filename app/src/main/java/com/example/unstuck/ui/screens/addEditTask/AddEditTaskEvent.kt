@@ -1,5 +1,6 @@
 package com.example.unstuck.ui.screens.addEditTask
 
+import android.content.Context
 import java.time.LocalDate
 import java.time.LocalTime
 
@@ -7,7 +8,7 @@ sealed interface AddEditTaskEvent {
     data class OnTitleChanged(val title: String): AddEditTaskEvent
     data class OnNotesChanged(val notes: String): AddEditTaskEvent
     data class OnRemindClicked(val remind: Boolean): AddEditTaskEvent
-    object OnSaveTask: AddEditTaskEvent
+    data class OnSaveTask(val context: Context): AddEditTaskEvent
     object OnDateTextFieldClicked: AddEditTaskEvent
     object OnDismissDatePicker: AddEditTaskEvent
     data class OnDateSelected(val selectedDate: LocalDate): AddEditTaskEvent

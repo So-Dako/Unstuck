@@ -22,6 +22,7 @@ import java.time.LocalTime
 import java.time.Instant
 import java.time.ZoneOffset
 import androidx.compose.runtime.*
+import androidx.compose.ui.platform.LocalContext
 import com.example.unstuck.database.Task
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -37,6 +38,8 @@ fun AddEditTask(
     val state = viewModel.addEditTaskState.collectAsStateWithLifecycle()
     val hasError = state.value.titleError != null
     val isSaved by viewModel.isSaved.collectAsStateWithLifecycle()
+
+    val context = LocalContext.current
 
     LaunchedEffect(isSaved) {
         if (isSaved) {
@@ -187,7 +190,7 @@ fun AddEditTask(
             }
             Button(
                 onClick = {
-                    viewModel.onEvent(AddEditTaskEvent.OnSaveTask) },
+                    viewModel.onEvent(AddEditTaskEvent.OnSaveTask(context)) },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(vertical = 8.dp)

@@ -5,7 +5,6 @@ import com.example.unstuck.database.TaskDao
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import java.time.LocalDate
-import java.time.LocalTime
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -17,8 +16,8 @@ class TaskRepository @Inject constructor(
         return taskDao.getTaskByDate(date.toString())
     }
 
-    suspend fun addTask(newTask: Task){
-        taskDao.upsertTask(newTask)
+    suspend fun upsertTask(newTask: Task): Int{
+        return taskDao.upsertTask(newTask).toInt()
     }
 
     suspend fun updateTask(task: Task){
