@@ -6,5 +6,7 @@ data class StatisticsState(
     val completedCount: Int = 0,
     val uncompletedCount: Int = 0,
     val completedTrend: Int = 0,
-    val uncompletedTrend: Int = 0
+    val uncompletedTrend: Int = 0,
+    val completedCountTrend: Int = 0,
+    val uncompletedCountTrend: Int = 0
 )

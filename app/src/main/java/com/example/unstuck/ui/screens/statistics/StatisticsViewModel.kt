@@ -59,11 +59,16 @@ class StatisticsViewModel @Inject constructor(
         val completedTrend = calculatePercentageChange(currentCompleted, previousCompleted)
         val uncompletedTrend = calculatePercentageChange(currentUncompleted, previousUncompleted)
 
+        val completedCountTrend = currentCompleted - previousCompleted
+        val uncompletedCountTrend = currentUncompleted - previousUncompleted
+
         return StatisticsState(
             completedCount = currentCompleted,
             uncompletedCount = currentUncompleted,
             completedTrend = completedTrend,
-            uncompletedTrend = uncompletedTrend
+            uncompletedTrend = uncompletedTrend,
+            completedCountTrend = completedCountTrend,
+            uncompletedCountTrend = uncompletedCountTrend
         )
     }
 

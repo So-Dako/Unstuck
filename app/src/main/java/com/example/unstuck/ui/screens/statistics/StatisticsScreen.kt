@@ -123,6 +123,8 @@ fun StatisticsScreen(
                         title = "Виконано",
                         value = stats.completedCount.toString(),
                         trendPercent = stats.completedTrend,
+                        trendCount = stats.completedCountTrend,
+                        periodIndex = selectedPeriodIndex,
                         isInverseLogic = false,
                         isDark = isDark,
                         modifier = Modifier.weight(1f)
@@ -131,6 +133,8 @@ fun StatisticsScreen(
                         title = "Не виконано",
                         value = stats.uncompletedCount.toString(),
                         trendPercent = stats.uncompletedTrend,
+                        trendCount = stats.completedCountTrend,
+                        periodIndex = selectedPeriodIndex,
                         isInverseLogic = true,
                         isDark = isDark,
                         modifier = Modifier.weight(1f)
@@ -156,6 +160,8 @@ fun StatisticCard(
     title: String,
     value: String,
     trendPercent: Int,
+    trendCount: Int,
+    periodIndex: Int,
     isInverseLogic: Boolean,
     isDark: Boolean,
     modifier: Modifier = Modifier
@@ -172,11 +178,20 @@ fun StatisticCard(
         Icons.AutoMirrored.Filled.TrendingDown
     }
 
-    val sign = if (trendPercent > 0) "+" else if (trendPercent < 0) "-" else ""
-    val absPercent = kotlin.math.abs(trendPercent)
-    val trendText = "$sign$absPercent% до попереднього"
+    val periodWord = when(periodIndex) {
+        0 -> "тиж"
+        1 -> "міс"
+        else -> "рік"
+    }
 
-    val trendColor = if (isGoodNews) {
+    val sign = if (trendPercent > 0) "+" else if (trendPercent < 0) "-" else ""
+    val absCount = kotlin.math.abs(trendCount)
+    val absPercent = kotlin.math.abs(trendPercent)
+    val trendText = "$sign$absCount ($absPercent% / $periodWord)"
+
+    val trendColor = if (trendPercent == 0) {
+        MaterialTheme.colorScheme.onSurfaceVariant
+    } else if (isGoodNews) {
         if (isDark) DarkSuccessGreen else LightSuccessGreen
     } else {
         if (isDark) DarkErrorRed else LightErrorRed
@@ -198,7 +213,7 @@ fun StatisticCard(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(20.dp)
+                .padding(16.dp)
         ) {
             Text(
                 text = title,
@@ -210,22 +225,23 @@ fun StatisticCard(
                 fontFamily = PlayfairFontFamily,
                 fontSize = 40.sp,
                 fontWeight = FontWeight.Medium,
-                modifier = Modifier.padding(vertical = 12.dp)
+                modifier = Modifier.padding(vertical = 8.dp)
             )
 
             Row(
                 verticalAlignment = Alignment.Top,
                 horizontalArrangement = Arrangement.spacedBy(4.dp)
             ) {
-                Icon(
-                    imageVector = trendIcon,
-                    contentDescription = null,
-                    tint = trendColor,
-                    modifier = Modifier
-                        .size(14.dp)
-                        .padding(top = 2.dp)
-                )
-
+                if (trendPercent != 0) {
+                    Icon(
+                        imageVector = trendIcon,
+                        contentDescription = null,
+                        tint = trendColor,
+                        modifier = Modifier
+                            .size(14.dp)
+                            .padding(top = 2.dp)
+                    )
+                }
                 Text(
                     text = trendText,
                     color = trendColor,
@@ -271,7 +287,7 @@ fun CircularProgress(
         )
         Text(
             text = "$percentage%",
-            fontSize = 40.sp
+            fontSize = 32.sp
         )
     }
 }
