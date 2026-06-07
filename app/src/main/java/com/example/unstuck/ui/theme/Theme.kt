@@ -11,23 +11,49 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.*
 
 private val DarkColorScheme = darkColorScheme(
-    primary = CherryBlossomPink,
-    onPrimary = VeryDarkPink,
+//    primary = CherryBlossomPink,
+//    onPrimary = VeryDarkPink,
+//
+//    background = VeryDarkPink,
+//    onBackground = CherryBlossomPink,
+//
+//    surface = VeryDarkPink,
+//    onSurface = CherryBlossomPink,
+//
+//    surfaceVariant = CherryBlossomPink.copy(alpha = 0.15f),
+//    onSurfaceVariant = CherryBlossomPink,
+//
+//    outline = CherryBlossomPink.copy(alpha = 0.2f)
+    primary = OliveKhaki,
+    onPrimary = Color.White,
 
-    background = VeryDarkPink,
-    onBackground = CherryBlossomPink,
+    background = DarkOliveNight,
+    onBackground = OliveKhaki,
 
-    surface = VeryDarkPink,
-    onSurface = CherryBlossomPink,
+    surface = DarkOliveNight,
+    onSurface = OliveKhaki,
 
-    surfaceVariant = CherryBlossomPink.copy(alpha = 0.15f),
-    onSurfaceVariant = CherryBlossomPink,
+    surfaceVariant = OliveKhaki.copy(alpha = 0.15f),
+    onSurfaceVariant = OliveKhaki,
 
-    outline = CherryBlossomPink.copy(alpha = 0.2f)
+    outline = OliveKhaki.copy(alpha = 0.2f)
 )
 
 private val LightColorScheme = lightColorScheme(
-    primary = CherryBlossomPink,
+//    primary = CherryBlossomPink,
+//    onPrimary = Color.White,
+//
+//    background = Color.White,
+//    onBackground = CharcoalBlue,
+//
+//    surface = Color.White,
+//    onSurface = CharcoalBlue,
+//
+//    surfaceVariant = CherryBlossomPink.copy(alpha = 0.15f),
+//    onSurfaceVariant = CharcoalBlue,
+//
+//    outline = CharcoalBlue.copy(alpha = 0.15f)
+    primary = OliveKhaki,
     onPrimary = Color.White,
 
     background = Color.White,
@@ -36,7 +62,7 @@ private val LightColorScheme = lightColorScheme(
     surface = Color.White,
     onSurface = CharcoalBlue,
 
-    surfaceVariant = CherryBlossomPink.copy(alpha = 0.15f),
+    surfaceVariant = OliveKhaki.copy(alpha = 0.12f),
     onSurfaceVariant = CharcoalBlue,
 
     outline = CharcoalBlue.copy(alpha = 0.15f)
