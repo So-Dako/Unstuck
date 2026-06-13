@@ -5,6 +5,7 @@ import android.app.AlarmManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import android.os.Build
 import com.example.unstuck.database.Task
 import java.time.LocalDate
 import java.time.LocalTime
@@ -15,6 +16,10 @@ object TaskReminderManager {
     @SuppressLint("ScheduleExactAlarm")
     fun scheduleReminder(context: Context, task: Task) {
         val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            if (!alarmManager.canScheduleExactAlarms()) return
+        }
 
         val localDate = LocalDate.parse(task.date)
         val localTime = LocalTime.parse(task.time)

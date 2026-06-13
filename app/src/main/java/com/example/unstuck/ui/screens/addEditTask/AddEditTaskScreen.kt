@@ -1,5 +1,12 @@
 package com.example.unstuck.ui.screens.addEditTask
 
+import android.R.attr.onClick
+import android.app.AlarmManager
+import android.content.Intent
+import android.os.Build
+import android.provider.Settings
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.gestures.awaitEachGesture
 import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.foundation.gestures.waitForUpOrCancellation
@@ -42,6 +49,10 @@ fun AddEditTask(
     val isSaved by viewModel.isSaved.collectAsStateWithLifecycle()
 
     val context = LocalContext.current
+
+    val exactAlarmLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult()
+    ) { }
 
     LaunchedEffect(isSaved) {
         if (isSaved) {
@@ -192,7 +203,21 @@ fun AddEditTask(
                     modifier = Modifier.weight(1f))
                 Switch(
                     checked = state.value.remind,
-                    onCheckedChange = { viewModel.onEvent(AddEditTaskEvent.OnRemindClicked(it)) },
+                    onCheckedChange = { isChecked ->
+                        run {
+                            if (isChecked && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                                val alarmManager =
+                                    context.getSystemService(AlarmManager::class.java)
+                                if (!alarmManager.canScheduleExactAlarms()) {
+                                    exactAlarmLauncher.launch(
+                                        Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM)
+                                    )
+                                    return@run
+                                }
+                            }
+                            viewModel.onEvent(AddEditTaskEvent.OnRemindClicked(isChecked))
+                        }
+                    }
                     )
             }
             Button(

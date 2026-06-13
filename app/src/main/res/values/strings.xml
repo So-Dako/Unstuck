@@ -69,7 +69,6 @@
     <string name="settings_dark_mode">Dark Mode</string>
     <string name="settings_footer">VERSION %1$s • BUILT WITH LOVE</string>
 
-    <string name="lang_sheet_title">Select Language</string>
     <string name="lang_ukrainian">Ukrainian (UK)</string>
     <string name="lang_english">English (EN)</string>
 
