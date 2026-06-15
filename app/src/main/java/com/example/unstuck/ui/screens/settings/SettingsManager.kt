@@ -21,9 +21,8 @@ class SettingsManager @Inject constructor(
     private val languageKey = stringPreferencesKey("language")
 
     suspend fun saveLanguage(code: String) {
-        context.dataStore.edit { preferences ->
-            preferences[languageKey] = code
-        }
+        context.getSharedPreferences("lang", Context.MODE_PRIVATE)
+            .edit().putString("language", code).apply()
     }
 
     val isDarkMode: Flow<Boolean> = context.dataStore.data.map { preferences ->
